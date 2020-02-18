@@ -671,8 +671,6 @@ if(first()|dupefinished()){
     
     function number modelLength(Model:string){
     
-        holoCreate(1)
-        holoAlpha(1,0)
         holoModel(1,Model)
         
         return carLength(holoEntity(1))
@@ -825,7 +823,7 @@ if(first()|dupefinished()){
     timer("freeze",500)
     E:setPos(E:pos()+vec(0,0,5))
     
-    TxClr = vec2(0.6,0.7)
+    TxClr = vec2(0.65,0.7)
     Spd = 4
     
     #Holograms and Coloration of the e2
@@ -838,10 +836,16 @@ if(first()|dupefinished()){
     holoColor(0,toRGB(vec(HUEEE,0.5,0.5)))
     HUEEE = (HUEEE + Spd)%360
     
+    holoCreate(1)
+    holoPos(1,E:pos())
+    holoParent(1,E) 
+    holoAlpha(1,0)
+    holoShadow(1,0)
+    
     #Version Checker
     
     runOnHTTP(1)
-    timer("timeout",5000)
+    timer("timeout",3500)
     httpRequest("https://raw.githubusercontent.com/SirMetaladon/convenient-classic-carspawner/master/versions.txt")
     
     printColor(toRGB(vec(HUEEE,TxClr:x(),TxClr:y())),"[CCC] Welcome to the Convenient, Classic Carspawner. Type .help for a how-to.")
@@ -877,6 +881,8 @@ if(httpClk()){
     }elseif(Version:toNumber() < Data:toNumber()){
         
         Print = Print:add(array("Outdated version detected! Do .updates to get the link."))
+        holoEntity(1):soundPlay(0,0,"buttons/combine_button_locked.wav")
+        holoEntity(0):soundPlay(1,0,"vo/engineer_moveup01.mp3")
         
     }elseif(Version:toNumber() > Data:toNumber()){
         
@@ -891,6 +897,7 @@ if(httpClk()){
 if(clk("timeout")){
     
     Print = Print:add(array("Could not retrieve version number. Refresh the E2 to check again!"))
+    holoEntity(1):soundPlay(0,0,"vo/engineer_negativevocalization01.mp3",0)
     
 }
 
