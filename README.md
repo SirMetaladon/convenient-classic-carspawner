@@ -1,7 +1,5 @@
 # convenient-classic-carspawner
-This is a Github page for the Convenient Classic Carspawner, a utility for Garry's Mod Trainbuild that makes pre-built train cars. 
-
-This is (hopefully) the end-all be-all of carspawners, with high flexibility, modularity, efficency, and intuitive usage.
+This is a Github page for the Convenient Classic Carspawner, a utility for Garry's Mod Trainbuild that makes pre-built train cars. This is (hopefully) the end-all be-all of carspawners, with high flexibility, modularity, efficency, and intuitive usage.
 
 
 Here's how to download:
