@@ -6,9 +6,11 @@ Here's how to download:
 
 1: Locate the latest-version folder here on the Github. 	
 
-2: Go into the folder, and select the green option "Clone or Download".	
+2: Go into the folder, and select the latest version "convenient_classic_carspawner_Vx.xx.txt by clicking on it.
 
-3: Download the convenient_classic_carspawner_vX.XX.txt file onto your computer.	
+3: Select the RAW option on the right. This will take you to a blank page with the script on it.
+
+4: Right-click and select "Save As". Save the file to your downloads as the default name.
 
 4: Move that text file to steam directory/common/garrysmod/garrysmod/data/expression2.
 
