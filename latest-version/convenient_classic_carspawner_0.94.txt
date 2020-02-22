@@ -868,8 +868,8 @@ if(first()|dupefinished()){
     
     if(Mode == 1 | Mode == 2){
         
-        US = -16
-        Up = 18
+        US = -17
+        Up = 19
         
     }
     
