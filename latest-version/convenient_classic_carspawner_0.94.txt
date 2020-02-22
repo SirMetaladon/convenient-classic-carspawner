@@ -1234,8 +1234,13 @@ if(chatClk(owner())){
         Print = Print:add(array(".rem [number of cars/tons/feet] (Removes cars. Add a t at the end of the number for tons, and ft for feet.)"))
         Print = Print:add(array(".space [number of feet] (Adds phantom space on the end of the train for use as a gap for mid-train helpers. 0 resets the spacer.)"))
         Print = Print:add(array(".addons (Links to FC&N Workshop collection.)"))
+        Print = Print:add(array(".settings (Explains the current E2 settings.)"))
+        Print = Print:add(array(".contact (Shows Steam and Discord contact info.)"))
+        Print = Print:add(array(".howto use (Shows the basics on how to use the E2)"))
+        Print = Print:add(array(".howto adv (Shows adv usage and tips.)"))
+        Print = Print:add(array(".faq (Frequently Asked Questions about the E2 and it's capabilities.)"))
         Print = Print:add(array(".updates (Links to the Github for updates and other versions.)"))
-        Print = Print:add(array(".refresh/reset/restart (Resets the E2, so it can be moved somewhere else.)"))
+        Print = Print:add(array(".refresh/reset/restart (Resets the E2 for making a new train.)"))
         Print = Print:add(array(".tags (Prints the types of tags.)"))
         Print = Print:add(array(".default (Prints the default tags.)"))
         Print = Print:add(array(".taglist (Prints literally all of the tags. (except model tags))"))
@@ -1248,7 +1253,11 @@ if(chatClk(owner())){
         
     }elseif(LSC:explode(" ")[1,string] == ".updates" | LSC:explode(" ")[1,string] == "!updates"){
         
-        Print = Print:add(array("Chances are, if there's a new version it's here!"))
+        Print = Print:add(array("Here's how to get the latest version:"))
+        Print = Print:add(array("Go to the github, go to latest_version, then click on the file."))
+        Print = Print:add(array("Rightclick, select Save As, then download the file as the normal name."))
+        Print = Print:add(array("Move the file to steamapps/common/garrysmod/garrysmod/data/expression2"))
+        Print = Print:add(array("Hit Refresh on the E2 sidebar ingame."))
         Print = Print:add(array("https://github.com/SirMetaladon/convenient-classic-carspawner/tree/master/latest-version"))
         hideChat(HideChat)
         
