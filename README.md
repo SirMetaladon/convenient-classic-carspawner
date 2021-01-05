@@ -20,6 +20,6 @@ Here's how to download:
 
 7: Double click on the file to open it, then click the X at the top-right to close the window.	
 
-8: Left-click on the ground with the E2 tool, and align the chip with the rails you wish to spawn on.	
+8: Left-click between the rails you want to spawn on, and the chip will align itself to the track.
 
 9: Done! Follow the ingame tutorial after you've placed the chip for usage and how-to's.	
