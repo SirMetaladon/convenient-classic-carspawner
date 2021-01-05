@@ -2007,7 +2007,7 @@ if(chatClk(owner())){ #Chat Commands
         +"Added a full debug log for finding rare bugs.\n"
         +"Added a century prefix to eras. (20s > 1920s)\n"
         +"Replaced \"modern\" with 2000s-2020s.\n"
-        +"Added a \'mstsports\" tag for MSTS cars.\n"
+        +"Added a \"mstsports\" tag for MSTS cars.\n"
         +"Fixed a major issue with printing long strings.\n"
         +"Added so much stuff I'm not even sure I caught it all.\n"
         +"Added the changelog command. ;)"
