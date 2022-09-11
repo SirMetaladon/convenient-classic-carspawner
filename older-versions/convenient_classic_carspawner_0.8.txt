@@ -1,0 +1,936 @@
+@name Convenient Classic Carspawner 0.8
+@inputs 
+@outputs TotalTrainLength ID CarsToSpawn CarsToRemove X Y Z N Phase LS:array
+@persist Print:array WeatheringPresets:array Failsafe MDL:table Quota TagAttributes:table Tags:table HideChat LS:array ID Pool:array S Spawned:table X Y Z N RopeID Delta TotalTrainLength CarsToSpawn Bogie:string Time Phase CarsToRemove Up RandT AngOffset:angle W Say:string E:entity Base:vector Shade:vector TrainTypes:table Fail Eye:vector Pos:vector Angle
+@trigger all
+
+@model models/magtrains/trucks/barber_s2_phx.mdl
+
+if(first()|dupefinished()){
+
+    setName("Convenient Classic Carspawner V0.8")
+    
+    runOnChat(1)
+    
+    WeatheringPresets = array(
+    
+        "models/proppertextures/acrylic","sprops/textures/sprops_metal5","models/proppertextures/enamel_black","phoenix_storms/wood_dome","models/proppertextures/acrylic_black","models/proppertextures/aluminum","models/magtrains/coal",
+        "wtp/metal_2","wtp/metal_5","models/props_gulch/tinycars/tc_darkgray","models/props_gulch/woodshelf008a","models/props_gulch/tinycars/tc_darkgray","icegt/loco/ice_trainmetal_grey","models/magtrains/coal",
+        "models/props_gulch/tinycars/tc_colorable","models/props_c17/metalladder001","models/props_gulch/tinycars/tc_darkgray","models/props_forest/sawmill_wood","models/props_gulch/tinycars/tc_darkgray","icegt/loco/ice_trainmetal_darkgrey","models/magtrains/coal",
+        "wtp/metal_5","models/props_c17/metalladder001","models/props_canal/metalwall005b","models/props_forest/sawmill_wood","sprops/trans/misc/ls_m1","icegt/loco/ice_trainmetal_grey","models/magtrains/coal" #,
+        #"models/props_c17/metalladder001","models/props_canal/metalwall005b","models/props_c17/metalladder002","models/props_foliage/driftwood_01a","sprops/trans/misc/ls_m2","models/props_gulch/tinycars/tc_lightgray","models/magtrains/coal"
+        
+    )
+    
+    Bogie = "models/magtrains/freightbogey2.mdl"
+    #"models/magtrains/trucks/barber_s2_phx.mdl"
+    Up = 20
+    
+    #[
+    Base = vec(340,0.275,0.3)
+    Shade = vec(360+250,0.3,0.05)]#
+    Base = vec(350,0.325,0.25)
+    Shade = vec(360+230,0.35,0.05)
+    BaseWhite = vec()
+    ShadeWhite = vec()
+    BaseBlack = vec()
+    ShadeBlack = vec()
+    BaseCoal = vec()
+    ShadeCoal = vec()
+    BaseTuscan = vec()
+    ShadeTuscan = vec()
+    BaseCem = vec(500,0.075,0.8)
+    ShadeCem = vec(360+230,0.1,0.15)
+    #vec(359,0.1,0.85)
+    #vec(0,0.05,0.1)
+    BaseTank = vec(370,0.015,0.15)
+    ShadeTank = vec(360+40,0.015,0.2)
+    #vec(359,0.01,0.15),vec(0,0.025,0.05)
+    
+    BaseWood = vec(0,0.4,0.3)
+    ShadeWood = vec(30,0.2,0.1)
+    
+    Delta = 3
+    
+    #[
+    
+    HOW TO ADD A CAR
+    
+    "model",vec4(FromMountToMount/2,-UpandDown,Rotation),array(MaterialType,MaterialSlot),vec(StartingHue,StartingSaturation,StartingLightness),vec(DeviationHue,DeviationSaturation,DeviationLightness),vec2(SkinMin,SkinMax),array(vec(Bodygroup#,BodygroupMin,BodygroupMax))
+    
+    
+    Tag exclusivity:
+    
+    boxcar,gondola,tanker,hopper,flatcar,caboose,autorack,jenny,centerbeam
+    freight,passenger,locomotive 
+    manifest,mow,unitfreight
+    new,old
+    magnum,monkatraz,metaladon,gsgrove,union,goomz
+    general,appliances,coal,ore,scrap,lpg
+    highcube,nonhigh
+    janky
+    preera 10s 20s 30s 40s 50s 60s 70s 80s 90s modern 
+    
+    ]#
+    
+    TagAttributes = table(
+        
+        array(0,"general_boxcar_highcube","appliance_boxcar_highcube","autoparts_boxcar_highcube","general_boxcar_nonhigh",
+            "scrap_gondola","woodchips_gondola","ore_gondola","general_gondola","steel_gondola","water_gondola","coal_gondola",
+            "general_tanker","ethanol_tanker","lpg_tanker","chemical_tanker","oil_tanker",
+            "l_coal_hopper_loaded","grain_hopper","cement_hopper","aggregate_hopper","ore_hopper","u_coal_hopper_empty",
+            "airslide_hopper_sugar","airslide_hopper_flour",
+            "centerbeam_flatcar_wood","log_flatcar","wood_flatcar","general_flatcar","heavy_flatcar","tofctrailer_flatcar","general_flatcar_bulkhead",
+            "caboose",
+            "stock",
+            "icereeferrefridgerator",
+            "trilevel_open_autorack","bilevel_open_autorack","bilevel_closed_autorack"),
+            
+        array(0,"modern","90s","80s","70s","60s","50s","40s","30s","20s","10s","preera"),
+        array(0,"metaladon","gsgrove","magnum","union","joeconqueror","monk","goomz","daylight"),
+        array(0,"new","old"),
+        array(0,"manifest","unitfreight","mow"),
+        array(0,"freight","passenger")
+        
+    )
+    
+    
+    
+    MDL = table(
+        
+        "models/magtrains/boxcar3.mdl",3,"general_boxcar_highcube freight manifest old magnum 70s 80s 90s modern",
+        vec(304*2,0,0),array(1,4,2,3,3,1,6,5),Base,Shade,vec2(0,0),array(vec(0,0,0)),
+        
+        "models/props_metaladon/boxcar_40ft_hycube.mdl",1,"appliance_boxcar_highcube freight manifest new metaladon 50s 60s 70s",
+        vec(176*2,0,0),array(1,4,2,3,3,1,1,8,2,9,5,11),Base,Shade,vec2(0,1),array(vec(6,0,1)),
+        
+        "models/props_metaladon/boxcar_86ft_autoparts.mdl",2,"autoparts_boxcar_highcube freight unitfreight old metaladon 70s 80s 90s modern",
+        vec(370*2,-1,0),array(1,1,1,6,2,5,3,2),Base,Shade,vec2(0,0),array(vec(1,0,4),vec(2,0,6),vec(7,0,3),vec(8,0,1)),
+        
+        "models/magtrains/monkatraz/boxcars/boxcar_40pw_standard.mdl",6,"general_boxcar_nonhigh freight manifest old magnum monkatraz general 30s 40s 50s 60s",
+        vec(172*2,0,0),array(1,2,1,4,1,6,1,9,2,5,3,1),Base,Shade,vec2(0,0),array(vec(4,0,2),vec(5,0,2),vec(1,2,3),vec(3,0,5)),
+        
+        "models/magtrains/boxcar_50.mdl",5,"general_boxcar_nonhigh freight manifest new magnum general nonhigh 70s 80s 90s modern",
+        vec(224*2,0,0),array(1,5,2,7,3,1),Base,Shade,vec2(0,0),array(vec(1,0,3),vec(2,0,2),vec(3,0,2),vec(4,0,2)),
+        
+        "models/props_metaladon/freelance/boxcar_60ft_autoparts.mdl",1,"autoparts_boxcar_highcube freight manifest new metaladon autoparts highcube 60s 70s 80s",
+        vec(543,0,0),array(1,4,2,3,3,1,1,8,2,9,5,11),Base,Shade,vec2(0,1),array(vec(6,0,1)),
+        
+        "models/unionstrains/boxcar1.mdl",1,"general_boxcar_nonhigh freight manifest janky old union 30s 40s 50s 60s",
+        vec(227*2,70,0),array(1,4,2,6,3,1,3,3,4,5),Base,Shade,vec2(0,0),array(vec(0,0,0)),
+        
+        "models/magtrains/gondola1.mdl",3,"general_gondola freight manifest old magnum 40s 50s 60s 70s 80s 90s modern",
+        vec(304*2,0,0),array(2,1,3,3,1,2),Base,Shade,vec2(0,0),array(vec(0,0,0)),
+        
+        "models/magtrains/gondola2.mdl",2,"scrap_gondola freight manifest old magnum 60s 70s 80s 90s modern",
+        vec(304*2,0,0),array(2,1,3,2,1,3),Base,Shade,vec2(0,0),array(vec(0,0,0)),
+        
+        "models/gsgtrainprops/trains/rolling_stock/gon_52ft_nsc.mdl",1,"scrap_gondola freight manifest old gsgrove 70s 80s 90s modern", 
+        vec(505,-14,90),array(),vec(1),vec(0),vec2(0,2),array(vec(1,1,2)),
+        
+        "models/gsgtrainprops/trains/rolling_stock/gon_52ft_thrall.mdl",1,"scrap_gondola freight manifest old gsgrove 70s 80s 90s modern",
+        vec(505,-14,90),array(),vec(1),vec(0),vec2(0,2),array(vec(1,1,2)),
+        
+        "models/props_metaladon/gondola_woodchips_gunderson.mdl",1,"woodchips_gondola freight manifest old metaladon 70s 80s 90s modern",
+        vec(322*2,0,0),array(3,2,1,5,2,4,5,9,1,12),Base,Shade,vec2(0,0),array(vec(2,2,4),vec(3,0,6),vec(4,0,3)),
+        
+        "models/props_metaladon/gondola_woodchips_gunderson.mdl",1,"scrap_gondola freight manifest old metaladon 70s 80s 90s modern",
+        vec(322*2,0,0),array(3,2,1,5,2,4,5,9,1,12),Base,Shade,vec2(0,0),array(vec(2,6,6),vec(3,0,6),vec(4,0,3)),
+        
+        "models/unionstrains/gondola_g21.mdl",1,"general_gondola freight manifest old union janky 40s 50s 60s 70s",
+        vec(356*2,-19,90),array(3,1,1,3,2,5),Base,Shade,vec2(0,0),array(vec(0,0,0)),
+        
+        "models/props_metaladon/hopper_2bay_trinity.mdl",3,"cement_hopper freight manifest new metaladon 80s 90s modern",
+        vec(180*2,0,0),array(3,8,1,3,2,1,3,2),BaseCem,ShadeCem,vec2(0,0),array(vec(2,0,3)),
+        
+        "models/magtrains/hopper2.mdl",3,"cement_hopper freight manifest old magnum 60s 70s 80s 90s",
+        vec(176*2,0,0),array(3,2,1,4,2,1),BaseCem,ShadeCem,vec2(0,0),array(vec(0,0,0)),
+        
+        "models/gsgtrainprops/trains/rolling_stock/hopper_covered_3800.mdl",1,"cement_hopper freight manifest old gsgrove 70s 80s 90s",
+        vec(509,-14,90),array(),vec(1),vec(0),vec2(0,3),array(vec(0,0,0)),
+        
+        "models/magtrains/hopper1.mdl",3,"cement_hopper freight manifest old magnum 50s 60s 70s 80s",
+        vec(176*2,0,0),array(3,2,1,4,2,1),BaseCem,ShadeCem,vec2(0,0),array(vec(1,2,2)),
+        
+        "models/props_metaladon/tanker_34k_lpg.mdl",2,"lpg_tanker freight manifest old metaladon lpg 70s 80s 90s modern",
+        vec(324*2,0,0),array(1,1,3,3,2,5,1,6),BaseTank,ShadeTank,vec2(0,0),array(vec(0,0,1)),
+        
+        "models/props_metaladon/freelance/tanker_25k_trinity.mdl",3,"general_tanker ethanol_tanker freight manifest new metaladon 80s 90s modern",
+        vec(262*2,0,0),array(2,1,1,2,3,3,1,7),BaseTank,ShadeTank,vec2(0,0),array(vec(3,0,1)),
+        
+        "models/props_metaladon/tanker_8k_beercan.mdl",1,"chemical_tanker freight manifest new metaladon 60s 70s 80s 90s",
+        vec(96*2,0,0),array(3,2,2,4,1,5),BaseTank,ShadeTank,vec2(0,0),array(vec(3,0,1)),
+        
+        "models/magtrains/tanker1.mdl",1,"general_tanker chemical_tanker freight manifest old magnum 60s 70s 80s",
+        vec(208*2,-4,0),array(3,1,2,4,1,3),BaseTank,ShadeTank,vec2(0,0),array(vec(0,1,1)),
+        
+        "models/magtrains/tanker2.mdl",1,"lpg_tanker freight manifest old magnum 60s 70s 80s 90s",
+        vec(304*2,0,0),array(3,1,1,3,2,4),BaseTank,ShadeTank,vec2(0,0),array(vec(0,1,1)),
+        
+        "models/magtrains/tanker3.mdl",1,"ethanol_tanker freight manifest old magnum general 70s 80s 90s modern",
+        vec(320*2,0,0),array(3,1,1,2,2,3),BaseTank,ShadeTank,vec2(0,0),array(vec(0,1,1)),
+        
+        "models/magtrains/tanker4.mdl",1,"general_tanker freight manifest old magnum general 70s 80s 90s modern",
+        vec(256*2,0,0),array(3,1,2,2,1,5),BaseTank,ShadeTank,vec2(0,0),array(vec(0,1,1)),
+        
+        "models/props_metaladon/freelance/tanker_18k_chemical.mdl",3,"chemical_tanker freight manifest old magnum general 80s 90s modern",
+        vec(308,0,0),array(3,2,2,4,1,5),BaseTank,ShadeTank,vec2(0,0),array(vec(0,0,0)),
+        
+        "models/joe/rolling_stock/tank_car.mdl",3,"general_tanker freight manifest old joeconqueror 30s 40s 50s 60s 70s",
+        vec(208*2,0,90),array(4,5,3,1,1,2,2,3,2,7),vec(359,0.01,0.15),vec(0,0.025,0.05),vec2(0,0),array(vec(0,0,0)),
+        
+        "models/props_metaladon/hopper_2bay_airslide.mdl",2,"airslide_hopper_flour airslide_hopper_sugar freight manifest new metaladon 50s 60s 70s 80s 90s",
+        vec(244*2,0,0),array(2,2,1,3,3,4),BaseCem,ShadeCem,vec2(0,0),array(vec(0,0,0)),
+        
+        "models/props_metaladon/hopper_3bay_ari.mdl",4,"grain_hopper freight manifest old metaladon 80s 90s modern",
+        vec(284*2,0,0),array(1,1,2,2,3,3),BaseCem,ShadeCem,vec2(0,0),array(vec(0,0,0)),
+        
+        "models/magtrains/hopper3.mdl",1,"grain_hopper freight manifest old magnum 80s 90s modern",
+        vec(272*2,0,0),array(1,4,2,3,3,1),Base,Shade,vec2(0,0),array(vec(0,0,0)),
+        
+        "models/gsgtrainprops/trains/rolling_stock/hopper_covered_grain_4550.mdl",1,"grain_hopper freight manifest old gsgrove 70s 80s 90s",
+        vec(560,-14,90),array(),vec(1),vec(0),vec2(0,13),array(vec(0,0,0)),
+        
+        "models/gsgtrainprops/trains/rolling_stock/hopper_covered_grain_4100.mdl",1,"grain_hopper freight manifest old gsgrove 70s 80s 90s",
+        vec(570,-14,90),array(),vec(1),vec(0),vec2(0,1),array(vec(0,0,0)),
+        
+        "models/magtrains/hopper1.mdl",1,"grain_hopper freight manifest old magnum 60s 70s 80s",
+        vec(176*2,0,0),array(3,2,1,4,2,1),Base,Shade,vec2(0,0),array(vec(1,1,1)),
+        
+        "models/magtrains/hopper4.mdl",3,"grain_hopper freight manifest old magnum 70s 80s 90s",
+        vec(256*2,0,0),array(3,2,1,4,2,1),BaseCem,ShadeCem,vec2(0,0),array(vec(1,2,3)),
+        
+        "models/gsgtrainprops/trains/rolling_stock/hopper_covered_acf_4600.mdl",4,"grain_hopper freight manifest old gsgrove 70s 80s 90s modern",
+        vec(544,-14,90),array(),vec(1),vec(0),vec2(0,8),array(vec(0,0,0)),
+        
+        "models/magtrains/hopper1.mdl",1,"hopper freight manifest old magnum general grain 60s 70s 80s",
+        vec(176*2,0,0),array(3,2,1,4,2,1),vec(359,0.1,0.85),vec(0,0.05,0.1),vec2(0,0),array(vec(1,2,2)),
+        
+        "models/props_metaladon/gondola_woodchips_gunderson.mdl",1,"woodchips_gondola freight manifest old metaladon 60s 70s 80s",
+        vec(322*2,0,0),array(3,2,1,5,2,4,5,9,1,12),Base,Shade,vec2(0,0),array(vec(2,0,1),vec(3,0,6),vec(4,0,3)),
+        
+        "models/props_metaladon/flatcar_73ft_centerbeam.mdl",5,"centerbeam_flatcar_wood freight manifest new metaladon 80s 90s modern",
+        vec(360*2,0,0),array(2,1,1,2,3,3),Base,Shade,vec2(0,0),array(vec(1,0,1),vec(2,0,4),vec(3,0,8)),
+        
+        "models/magtrains/flatcar1.mdl",1,"wood_flatcar freight manifest old magnum 50s 60s 70s 80s",
+        vec(304*2,0,0),array(3,1,4,2,1,4,2,5),Base,Shade,vec2(0,0),array(vec(1,1,1)),
+        
+        "models/props_metaladon/freelance/flatcar_45ft_logs.mdl",2,"log_flatcar freight manifest new metaladon 60s 70s 80s 90s",
+        vec(386,1,0),array(3,1,4,2,1,4,2,5),Base,Shade,vec2(0,0),array(vec(3,0,6)),
+        
+        "models/magtrains/centerbeam1.mdl",1,"centerbeam_flatcar_wood freight manifest old magnum wood 60s 70s 80s 90s",
+        vec(304*2,0,0),array(3,2,4,3,1,5,2,1),Base,Shade,vec2(0,0),array(vec(1,0,1)),
+        
+        "models/magtrains/flatcar1.mdl",2,"general_flatcar freight manifest old magnum 40s 50s 60s 70s 80s 90s",
+        vec(304*2,0,0),array(3,1,4,2,1,4,2,5),Base,Shade,vec2(0,0),array(vec(0,0,0)),
+        
+        "models/magtrains/flatcar2.mdl",2,"general_flatcar_bulkhead freight manifest old magnum 40s 50s 60s 70s 80s 90s",
+        vec(304*2,0,0),array(3,1,4,2,1,4,2,5),Base,Shade,vec2(0,0),array(vec(0,0,0)),
+        
+        "models/props_metaladon/freelance/flatcar_40ft_freelance.mdl",1,"general_flatcar freight manifest mow new metaladon 30s 40s 50s 60s",
+        vec(166*2,1,0),array(3,2,4,7,1,3,2,5),Base,Shade,vec2(0,0),array(vec(3,0,2),vec(3,0,2)),
+        
+        "models/magtrains/flatcar3.mdl",1,"heavy_flatcar freight manifest old magnum 40s 50s 60s",
+        vec(264*2,0,0),array(1,1,3,2,3,3,2,5),Base,Shade,vec2(0,0),array(vec(0,0,0)),
+        
+        "models/unionstrains/flatcar1.mdl",1,"general_flatcar freight manifest old union janky 20s 30s 40s 50s 60s",
+        vec(257*2,-11,0),array(3,1,1,3,2,4),Base,Shade,vec2(0,0),array(vec(0,0,0)),
+        
+        "models/joe/rolling_stock/stock_car.mdl",2,"stock freight manifest old joeconqueror preera 10s 20s 30s 40s 50s",
+        vec(344,0,90),array(3,1,2,7,1,4,4,2,4,6,3,9,1,5),BaseWood,ShadeWood,vec2(0,0),array(vec(0,0,0)),
+        
+        "models/daylight/woodreefer.mdl",2,"icereeferrefridgerator freight manifest old daylight joeconqueror preera 10s 20s 30s 40s",
+        vec(326,0,0),array(3,5,2,3,2,4),BaseWood,ShadeWood,vec2(0,0),array(vec(0,0,0)),
+        
+        "models/daylight/ll_tankcar.mdl",2,"general_tanker chemical_tanker freight manifest old daylight joeconqueror 10s 20s 30s 40s",
+        vec(296,-2,90),array(1,1,3,3,2,4),BaseTank,ShadeTank,vec2(0,0),array(vec(0,0,0)),
+        
+        "models/joe/rolling_stock/1860s/boxcar/boxcar.mdl",3,"general_boxcar_nonhigh freight manifest old joeconqueror preera 10s 20s 30s",
+        vec(264,-10,90),array(2,1,4,2,2,3,2,5),BaseWood,ShadeWood,vec2(0,0),array(vec(0,0,0)),
+        
+        "models/joe/rolling_stock/1860s/24_boxcar/24_boxcar.mdl",3,"general_boxcar_nonhigh freight manifest old joeconqueror preera 10s 20s 30s",
+        vec(220,-8,90),array(2,1,2,2,2,3,2,5,2,9,4,4),BaseWood,ShadeWood,vec2(0,0),array(vec(0,0,0)),
+        
+        "models/joe/rolling_stock/1860s/open_stock_car/open_stock_car.mdl",1,"stock freight manifest old joeconqueror preera 10s 20s",
+        vec(220,-8,90),array(3,2,2,3,4,6,2,7,2,8),BaseWood,ShadeWood,vec2(0,0),array(vec(0,0,0)),
+        
+        "models/joe/rolling_stock/1860s/flat_car/flat_car.mdl",2,"general_flatcar freight manifest old joeconqueror preera 10s 20s",
+        vec(220,-8,90),array(4,2,3,3,2,4,3,7),BaseWood,ShadeWood,vec2(0,0),array(vec(1,1,1),vec(2,0,1)),
+        
+        "models/joe/rolling_stock/1860s/flat_car/flat_car.mdl",2,"general_gondola freight manifest old joeconqueror preera 10s 20s",
+        vec(220,-8,90),array(4,2,3,3,2,4,3,7),BaseWood,ShadeWood,vec2(0,0),array(vec(3,1,1)),
+        
+        "models/joe/rolling_stock/1860s/flat_car/flat_car.mdl",1,"water_gondola freight manifest old joeconqueror preera 10s 20s",
+        vec(220,-8,90),array(4,2,3,3,2,4,3,7),BaseWood,ShadeWood,vec2(0,0),array(vec(3,1,1),vec(4,2,2)),
+        
+        "models/joe/rolling_stock/1860s/flat_car/flat_car.mdl",2,"coal_gondola freight manifest old joeconqueror preera 10s 20s",
+        vec(220,-8,90),array(4,2,3,3,2,4,3,7),BaseWood,ShadeWood,vec2(0,0),array(vec(3,1,1),vec(4,1,1)),
+        
+        #"models/gsgtrainprops/trains/rolling_stock/trashflat.mdl",vec(162,403,-44,90),array(),vec(1),vec(0),vec2(0,2),array(vec(1,0,2))
+    
+    
+        "models/magtrains/hopper1.mdl",3,"u_coal_hopper_empty freight manifest unitfreight old magnum 20s 30s 40s 50s 60s 70s",
+        vec(176*2,0,0),array(3,2,1,4,2,1),vec(360,0.15,0.2),vec(360+10,0.2,0.25),vec2(0,0),array(vec(2,0,0)),
+        
+        "models/magtrains/hopper4.mdl",2,"u_coal_hopper_empty freight manifest unitfreight old magnum 40s 50s 60s 70s 80s",
+        vec(256*2,0,0),array(3,2,1,4,2,1),vec(360,0.15,0.2),vec(360+10,0.2,0.25),vec2(0,0),array(vec(1,0,1),vec(2,0,0)),
+        
+        #"models/unionstrains/bethgon1.mdl",vec(97,285,3,0),array(3,2,1,1,2,4,7,8,3,7),vec(360,0.15,0.2),vec(360+10,0.2,0.25),vec2(0,0),array(vec(5,0,0),vec(2,3,3),vec(3,3,3)),
+        
+        "models/gsgtrainprops/trains/rolling_stock/bathtub_thrall_coal.mdl",3,"u_coal_hopper_empty freight unitfreight old gsgrove 70s 80s 90s",
+        vec(459,-14,90),array(),vec(1),vec(0),vec2(0,15),array(vec(1,0,0)),
+        
+        "models/gsgtrainprops/trains/rolling_stock/bathtub_hs_coal.mdl",2,"u_coal_hopper_empty freight unitfreight old gsgrove 70s 80s 90s",
+        vec(551,-14,90),array(),vec(1),vec(0),vec2(0,9),array(vec(0,0,0)),
+        
+        
+        #"models/unionstrains/hopper1.mdl",vec(72,188,40,0),array(3,1,2,3,1,4,3,5,7,9,3,7),vec(360,0.15,0.2),vec(360+10,0.2,0.25),vec2(0,0),array(vec(1,0,0)),
+    
+        "models/magtrains/hopper1.mdl",3,"l_coal_hopper_loaded freight manifest unitfreight old magnum 20s 30s 40s 50s 60s 70s",
+        vec(176*2,0,0),array(3,2,1,4,2,1),vec(360,0.15,0.2),vec(360+10,0.2,0.25),vec2(0,0),array(vec(2,1,1)),
+        "models/magtrains/hopper4.mdl",2,"l_coal_hopper_loaded freight manifest unitfreight old magnum 40s 50s 60s 70s 80s",
+        vec(256*2,0,0),array(3,2,1,4,2,1),vec(360,0.15,0.2),vec(360+10,0.2,0.25),vec2(0,0),array(vec(1,0,1),vec(2,1,1)),
+        
+        #"models/unionstrains/bethgon1.mdl",vec(97,285,3,0),array(3,2,1,1,2,4,7,8,3,7),vec(360,0.15,0.2),vec(360+10,0.2,0.25),vec2(0,0),array(vec(5,3,3),vec(2,3,3),vec(3,3,3)),
+        
+        "models/gsgtrainprops/trains/rolling_stock/bathtub_thrall_coal.mdl",3,"l_coal_hopper_loaded freight unitfreight old gsgrove 70s 80s 90s",
+        vec(459,-14,90),array(),vec(1),vec(0),vec2(0,15),array(vec(1,1,1)),
+        
+        "models/gsgtrainprops/trains/rolling_stock/bathtub_hs_coal.mdl",2,"l_coal_hopper_loaded freight unitfreight old gsgrove 70s 80s 90s",
+        vec(551,-14,90),array(),vec(1),vec(0),vec2(0,9),array(vec(1,1,1)),
+        
+        
+        #"models/unionstrains/hopper1.mdl",vec(72,188,40,0),array(3,1,2,3,1,4,3,5,7,9,3,7),vec(360,0.15,0.2),vec(360+10,0.2,0.25),vec2(0,0),array(vec(1,3,4)),
+        
+        
+        "models/magtrains/jenny1.mdl",1,"ore_hopper ore_jenny freight unitfreight old metaladon 40s 50s 60s 70s 80s",
+        vec(108*2,-2,0),array(1,1,3,2,2,3,2,5),vec(5,0.25,0.3),vec(20,0.05,0.025),vec2(0,0),array(),
+        "models/props_metaladon/jenny_24ft_u27.mdl",1,"ore_gondola ore_jenny freight unitfreight old magnum 50s 60s 70s",
+        vec(106*2,6,0),array(2,1,1,2,3,3),vec(5,0.25,0.3),vec(20,0.05,0.025),vec2(0,0),array(),
+    
+        "models/magtrains/caboose1.mdl",1,"caboose old magnum 30s 40s 50s 60s 70s 80s 90s",
+        vec(176*2,0,0),array(3,1,3,2,1,3,1,4,1,5,2,7,2,9),Base,Shade,vec2(0,0),array(vec(1,0,1)),
+        "models/magtrains/caboose2.mdl",1,"caboose old magnum 30s 40s 50s 60s 70s 80s 90s",
+        vec(176*2,0,0),array(3,1,3,2,1,3,1,4,1,5,2,7,2,9),Base,Shade,vec2(0,0),array(vec(1,0,1)),
+        "models/magtrains/caboose3.mdl",1,"caboose old magnum 30s 40s 50s 60s 70s 80s 90s",
+        vec(176*2,0,0),array(3,1,3,2,1,3,1,4,1,5,2,7,2,10),Base,Shade,vec2(0,0),array(vec(1,0,1)),
+        "models/magtrains/caboose4.mdl",1,"caboose old magnum 30s 40s 50s 60s 70s 80s 90s",
+        vec(176*2,0,0),array(3,1,3,2,1,3,1,4,1,5,2,7,3,9),Base,Shade,vec2(0,0),array(vec(1,0,1)),
+        
+        "models/magtrains/autorack1.mdl",1,"bilevel_closed_autorack freight unitfreight old magnum 80s 90s",
+        vec(608,0,0),array(1,1,3,3,2,2),Base,Shade,vec2(0,0),array(vec(0,0,0)),
+        "models/magtrains/autorack2.mdl",1,"bilevel_open_autorack freight unitfreight old magnum 70s 80s 90s",
+        vec(608,0,0),array(3,1,2,2,1,3),Base,Shade,vec2(0,0),array(vec(0,0,0)),
+        
+        "models/magtrains/autorack_89_covered.mdl",3,"bilevel_closed_autorack freight unitfreight new magnum 80s 90s modern",
+        vec(784,0,0),array(3,1,1,2,1,7),Base,Shade,vec2(0,0),array(vec(1,0,6),vec(2,0,3),vec(3,0,1)),
+        "models/gsgtrainprops/trains/rolling_stock/autorack_bilevel_enclosed.mdl",3,"bilevel_closed_autorack freight unitfreight new gsgrove 80s 90s modern",
+        vec(804,-14,90),array(),vec(1),vec(0),vec2(0,12),array(vec(0,0,0)),
+        
+        "models/gsgtrainprops/trains/rolling_stock/autorack_bilevel_semiopen.mdl",1,"bilevel_open_autorack freight unitfreight old gsgrove 70s 80s 90s",
+        vec(804,-14,90),array(),vec(1),vec(0),vec2(0,2),array(vec(1,0,1)),
+        "models/gsgtrainprops/trains/rolling_stock/autorack_trilevel_semiopen.mdl",1,"trilevel_open_autorack freight unitfreight old gsgrove 70s 80s 90s",
+        vec(786,-14,90),array(),vec(1),vec(0),vec2(0,3),array(vec(1,0,1))
+        
+    )
+    
+    if(owner():steamID() != "STEAM_0:0:58490966" & #Metal
+     owner():steamID() != "STEAM_0:1:157244031" & #Faz
+     owner():steamID() != "STEAM_0:1:155900233" & #Albert
+     owner():steamID() != "STEAM_0:0:78277747" & #Seabo
+     owner():steamID() != "STEAM_0:1:8269978" &  #Iron
+     owner():steamID() != "STEAM_0:1:454349585" & #Groot
+     owner():steamID() != "STEAM_0:0:67473266" & #Ballistic
+     owner():steamID() != "STEAM_0:0:45231410" & #Cubic
+     owner():steamID() != "STEAM_0:0:75041861" & #Waffles
+     owner():steamID() != "STEAM_0:0:19534982" & #Geordie
+     owner():steamID() != "STEAM_0:1:49484663" & #Caloco
+     owner():steamID() != "STEAM_0:1:62032391" & #Scott
+     owner():steamID() != "STEAM_0:0:86298126"   #Ince
+    
+    ){ 
+        
+        print("!!pointerExceptionError: cannot_deduce_correct_source!!")
+        selfDestructAll()
+        
+    }else{
+    
+        print("Welcome to the Convenient, Classic Carspawner. Type .help for a how-to.")
+        
+    }
+        
+    function vector randtoRGB(Base:vector,Shade:vector){
+        
+        local Hue = mod(random(Base:x(),Shade:x()),360)
+        local Sat = clamp(Base:y()+random(Shade:y(),-Shade:y()),0,1)
+        local Light = clamp(Base:z()+random(Shade:z(),-Shade:z()),0,1)
+        
+        local Chr = (1 - abs(2 * Light - 1)) * Sat
+        local H = Hue/60
+        local MID =(1 - abs(H % 2 - 1)) * Chr
+        
+        if(H < 1){
+            R = Chr
+            G = MID
+            B = 0
+        }elseif(H < 2){
+            R = MID
+            G = Chr
+            B = 0
+        }elseif(H < 3){
+            R = 0
+            G = Chr
+            B = MID
+        }elseif(H < 4){
+            R = 0
+            G = MID
+            B = Chr
+        }elseif(H < 5){
+            R = MID
+            G = 0
+            B = Chr
+        }elseif(H < 6){
+            R = Chr
+            G = 0
+            B = MID
+        }else{
+            R = 255
+            G = 255
+            B = 255
+        }
+        
+        local M = Light - Chr/2
+        return vec(R+M,G+M,B+M)*255
+    
+    }
+    
+    function vector toRGB(HSL:vector){
+        
+        #local Hue = mod(random(Base:x(),Shade:x()),360)
+        #local Sat = clamp(Base:y()+random(Shade:y(),-Shade:y()),0,1)
+        #local Light = clamp(Base:z()+random(Shade:z(),-Shade:z()),0,1)
+        local Hue = HSL:x()
+        local Sat = HSL:y()
+        local Light = HSL:z()
+        
+        local Chr = (1 - abs(2 * Light - 1)) * Sat
+        local H = Hue/60
+        local MID =(1 - abs(H % 2 - 1)) * Chr
+        
+        if(H < 1){
+            R = Chr
+            G = MID
+            B = 0
+        }elseif(H < 2){
+            R = MID
+            G = Chr
+            B = 0
+        }elseif(H < 3){
+            R = 0
+            G = Chr
+            B = MID
+        }elseif(H < 4){
+            R = 0
+            G = MID
+            B = Chr
+        }elseif(H < 5){
+            R = MID
+            G = 0
+            B = Chr
+        }elseif(H < 6){
+            R = Chr
+            G = 0
+            B = MID
+        }else{
+            R = 100
+            G = 255
+            B = 255
+        }
+        
+        local M = Light - Chr/2
+        return vec(R+M,G+M,B+M)*255
+    
+    }
+    
+    function number carLength(Ent:entity){
+        
+        if(Ent:boxSize():y()-8 > Ent:boxSize():x()-8){
+        
+            return Ent:boxSize():y()-8
+            
+        }else{
+            
+            return Ent:boxSize():x()-8 
+        
+        }
+
+    }
+    
+    function number modelLength(Model:string){
+    
+        holoCreate(1)
+        holoAlpha(1,0)
+        holoModel(1,Model)
+        
+        return carLength(holoEntity(1))
+        
+    }
+    
+    TrainTypes = table(
+        
+        "Boxcars",array(1),
+        "Tankers",array(4),
+        "Gondolas",array(2),
+        "Manifest",array(1,1,1,1,1,2,3,3,4,4,5,5,6,7,8,9),
+        "Loaded Coal",array(9),
+        "Empty Coal",array(8),
+        "Autoracks",array(12),
+        "Cement",array(3),
+        "Ore",array(10),
+        "Cabooses",array(11),
+        "Wood/Lumber",array(6),
+        "Flatcars",array(7),
+        "Grain",array(5),
+        "All",array(1,2,3,4,5,6,7,8,9,10,11,12)
+        
+    )
+    
+    E = entity()
+    
+    S = 9
+    Quota = 1000
+    
+    X = Y = Z = 1
+    
+    ID = 1
+    
+    HideChat = 1
+    
+    Pool = array()
+    
+    interval(100)
+    
+    holoCreate(0,E:toWorld(vec(0,70,-7)),vec(1,1,1.5)*2.5,E:toWorld(ang(0,0,-90)),vec(0,0,0),"cone")
+    holoParent(0,E)
+    holoMaterial(0,"debug/debugdrawflat")
+    
+    holoColor(0,randtoRGB(vec(90,0.9,0.5),vec(140,0.1,0)))
+    E:setColor(randtoRGB(Base,Shade))
+    
+}
+
+interval(100)
+#print("iteration")
+
+if(clk()){
+
+    if(Print:count() & playerCanPrint()){
+        
+        if(Print[1,string] != ""){
+            
+            print(Print[1,string])
+            
+        }elseif(Print[1,number]:toString() != ""){
+        
+            print(Print[1,number]:toString())
+            
+        }else{
+        
+            print("Incompatible!")
+            
+        }
+        
+        Print:remove(1)
+        
+    }
+    
+    Eye = E:pos()
+    Angle = round((E:angles():yaw()-90)/22.5)*22.5
+    
+    #E:setBodygroup(1,randint(0,5))
+    
+    Time = Time + 1
+    
+    if(Time % 5 == 0){
+    
+        holoColor(0,randtoRGB(vec(90,0.9,0.5),vec(140,0.1,0)))
+        E:setColor(randtoRGB(Base,Shade))
+        
+        W = randint(1,WeatheringPresets:count()/7)*7
+            
+        for(X =1, 4){
+             
+            E:setSubMaterial(array(3,1,1,9,2,7,3,2)[X*2,number],WeatheringPresets[W-(7-array(3,1,1,9,2,7,3,2)[X*2-1,number]),string])
+            
+        }
+        
+    }
+    
+}
+
+if(chatClk(owner())){
+    
+    if(!Phase & (owner():lastSaid():trim():explode(" ")[1,string] == "!spawn" | owner():lastSaid():trim():explode(" ")[1,string] == ".spawn")){
+        
+        if(owner():lastSaid():trim():explode(" ")[2,string]:toNumber() != 0){
+            
+            LS = LS:add(array(owner():lastSaid():trim()))
+            hideChat(HideChat)
+            
+        }else{
+        
+            Print = Print:add(array("Incorrect syntax! Do .spawn [number of cars] [tag] [tag] etc..."))
+            
+        }
+        
+    }elseif(owner():lastSaid():trim():explode(" ")[1,string] == ".remove" | owner():lastSaid():trim():explode(" ")[1,string] == "!remove"){
+        
+        #LS = LS:add(array(owner():lastSaid():trim():explode(" ")[1,string]))
+        CarsToRemove = clamp(owner():lastSaid():trim():explode(" ")[2,string]:toNumber(),0,(ID-1)/3)
+        CarsToSpawn = 0
+        hideChat(HideChat)
+    
+    }elseif(owner():lastSaid():trim():explode(" ")[1,string] == ".help" | owner():lastSaid():trim():explode(" ")[1,string] == "!help"){
+        
+        Print = Print:add(array("Here's how to use the spawner."))
+        Print = Print:add(array("Type .spawn, then the number of cars you want, then"))
+        Print = Print:add(array("the type of car you want, like \"boxcar\"."))
+        Print = Print:add(array("Example: \".spawn 2 cem\" would spawn 2 cement hoppers."))
+        Print = Print:add(array("To remove a car, type .remove number of cars."))
+        Print = Print:add(array("Example: \".remove 3\" would remove 3 cars."))
+        Print = Print:add(array("If it spawns errors, do .addons for a list of requirements"))
+        hideChat(HideChat)
+        
+          
+    }elseif(owner():lastSaid():trim():explode(" ")[1,string] == ".addons" | owner():lastSaid():trim():explode(" ")[1,string] == "!addons"){
+        
+        Print = Print:add(array("Here's a link to the FC&N Server Collection"))
+        Print = Print:add(array("It should contain the textures and models required."))
+        Print = Print:add(array("http://steamcommunity.com/sharedfiles/filedetails/?id=390798140"))
+        Print = Print:add(array("Hit the Subscribe All button, and close Garry's Mod."))
+        Print = Print:add(array("Re-launch the game, let the addons download, then rejoin!"))
+        hideChat(HideChat)
+          
+    }
+    
+}
+    
+if((LS[1,string]:explode(" ")[1,string] == "!spawn" | LS[1,string]:explode(" ")[1,string] == ".spawn")){
+    
+    if(!Phase){
+        
+        CarsToSpawn = LS[1,string]:explode(" ")[2,string]:toNumber()
+        Pool = array()
+        Tags = table()
+        Phase = X = Y = Z = N =1
+        
+    }
+    
+    
+    
+    if(Phase == 1){
+        
+        while(X <= LS[1,string]:lower():explode(" "):count()-2 & minquota() > Quota){
+            
+            while(Y <= TagAttributes:count() & minquota() > Quota){
+                
+                while(Z <= TagAttributes[Y,array]:count()-1 & minquota() > Quota){
+                    
+                    if(TagAttributes[Y,array][Z+1,string]:find(LS[1,string]:lower():explode(" ")[X+2,string])){
+                        
+                        Tags[toString(Y),array] = Tags[toString(Y),array]:add(array(TagAttributes[Y,array][Z+1,string]))
+                        
+                    }
+                    
+                    Z++
+                     
+                }
+                
+                if(Z > TagAttributes[Y,array]:count()-1){
+                    
+                    Y++
+                    Z = 1
+                    
+                    
+                }
+                
+            }
+            
+            if(Y > TagAttributes:count()){
+                
+                X++
+                Y = 1
+                
+            }
+            
+        }
+        
+        if(Tags:count() == 0 & X > LS[1,string]:lower():explode(" "):count()-2){
+            
+            Print = Print:add(array("No tags selected!"))
+            Phase = 0
+            LS:remove(1)
+            X = Y = Z = N = 1
+            
+            
+        }elseif(X > LS[1,string]:lower():explode(" "):count()-2){
+        
+            Phase = 2
+            X = Y = Z = N = 1
+            
+        }
+        
+        #print("cycle")
+        
+    }
+    
+    if(Phase == 2){
+        
+        while(X <= MDL:count()/S & minquota() > Quota){
+
+            while(Y <= TagAttributes:count() & minquota() > Quota){
+
+                while(Z <= Tags[toString(Y),array]:count() & minquota() > Quota){
+                    
+                    if(MDL[X*9-6,string]:find(Tags[toString(Y),array][Z,string])){
+                    
+                        break
+                        
+                    }else{
+                    
+                        Z++
+                        
+                    }
+                    
+                }
+                
+                if(Z > Tags[toString(Y),array]:count() & Tags[toString(Y),array]:count()){
+                    
+                    break
+                    
+                }elseif(MDL[X*9-6,string]:find(Tags[toString(Y),array][Z,string])){
+                    
+                    Z = 1
+                    Y++
+                    
+                }
+
+            }
+
+            if(Y > TagAttributes:count()){
+                                
+                while(N <= round((MDL[((X*S)-(S-1))+1,number])^Delta) & minquota() > Quota){
+                    
+                    Pool = Pool:add(array(X))
+                    N++
+                    
+                }
+                
+                if(N > round((MDL[((X*S)-(S-1))+1,number])^Delta)){
+                    
+                    X++
+                    Y = 1
+                    N = 1
+                    
+                }
+                
+            }elseif(Z > Tags[toString(Y),array]:count() & Tags[toString(Y),array]:count()){
+            
+                X++
+                Y = 1
+                Z = 1
+                
+            }
+            
+        }
+    
+        if(X > MDL:count()/S){
+        
+            X = 1
+            Phase = 0
+            LS:remove(1)
+            
+            
+        }
+        
+    }
+
+        #[
+        for(X = 1, MDL:count()/9){
+            
+            for(Y = 1, owner():lastSaid():trim():lower():explode(" "):count()-2){
+                
+                for(Z = 1, TagAttributes:count()){
+                    
+                    if(owner():lastSaid():trim():lower():explode(" ")[Y+2,string] == 0
+            
+                if(TrainTypes[X*2-1,string]:lower():find(owner():lastSaid():trim():lower():explode(" ")[Y+2,string]) == 0){
+                    
+                    Fail = 1
+                    break
+                    
+                } 
+                 
+            }
+            
+            if(Fail == 0){
+                
+                Pool = TrainTypes[X*2,array]
+                Print = Print:add(array("Spawning " + CarsToSpawn + " " + TrainTypes[X*2-1,string]))
+                
+            }else{
+            
+               Fail = 0
+            
+            }
+                 
+        }
+        
+        if(Pool:count() == 0){
+            
+            for(X = 1, owner():lastSaid():trim():lower():explode(" "):count()-2){
+                
+                Say = Say + owner():lastSaid():trim():lower():explode(" ")[X+2,string] + " "
+                
+            }
+            
+            Print = Print:add(array("Cannot find type \"" + Say:trim() + "\". Do .types to see availible cars."))
+            Say = ""
+            
+        }
+        
+    }else{
+        
+        Print = Print:add(array("Incorrect syntax! Do \".spawn [number of cars] [type of car]\""))
+        Print = Print:add(array("That, or you tried to spawn 0 cars."))
+        
+    }
+        
+    hideChat(HideChat)]# 
+    
+}
+
+if(CarsToSpawn & minquota() > Quota){
+    
+    if(Pool:count()){
+            
+        RandT = (Pool[randint(1,Pool:count()),number]*S)-(S-1)
+        #print(RandT)
+        #RandT = (randint(1,(MDL:count())/S)*S)+F 
+    
+        Failsafe = ID
+            
+        Angle = round((E:angles():yaw())/22.5)*22.5
+        AngOffset = ang(0,Angle,0):rotateAroundAxis(vec(0,0,1),MDL[RandT+3,vector]:z())
+        Pos = E:pos() + (vec(0,(TotalTrainLength + modelLength(MDL[RandT,string])-MDL[RandT+3,vector]:x())/2,0):rotateAroundAxis(vec(0,0,1),Angle))
+         
+        ID = ID + propCanCreate()
+        Spawned[toString(Failsafe),entity] = propSpawn(MDL[RandT,string],Pos+vec(0,MDL[RandT+3,vector]:x()/2,Up + MDL[RandT+3,vector]:y()):rotateAroundAxis(vec(0,0,1),Angle),AngOffset,1)
+        noCollideAll(Spawned[toString(Failsafe),entity],1)
+        Spawned[toString(Failsafe),entity]:setMass(19047)
+        
+        ID = ID + propCanCreate()
+        Spawned[toString(Failsafe+1),entity] = propSpawn(Bogie,Pos+vec(0,MDL[RandT+3,vector]:x(),Up):rotateAroundAxis(vec(0,0,1),Angle),ang(0,Angle,0),1)
+        Spawned[toString(Failsafe+1),entity]:setMass(6394)
+        
+        ID = ID + propCanCreate()
+        Spawned[toString(Failsafe+2),entity] = propSpawn(Bogie,Pos+vec(0,0,Up):rotateAroundAxis(vec(0,0,1),Angle),ang(0,Angle,0),1)  
+        Spawned[toString(Failsafe+2),entity]:setMass(6394)
+        
+        if(ID != Failsafe + 3){
+
+            Spawned[toString(Failsafe),entity]:propDelete()
+            Spawned[toString(Failsafe+1),entity]:propDelete()
+            Spawned[toString(Failsafe+2),entity]:propDelete()
+            
+            Spawned:remove(toString(Failsafe+2))
+            Spawned:remove(toString(Failsafe+1))
+            Spawned:remove(toString(Failsafe))
+            
+            ID = Failsafe
+            
+            
+            
+        }else{
+            
+            while(X <= MDL[RandT+8,array]:count()){
+                 
+                Spawned[toString(Failsafe),entity]:setBodygroup(MDL[RandT+8,array][X,vector]:x(),randint(MDL[RandT+8,array][X,vector]:y(),MDL[RandT+8,array][X,vector]:z()))
+                X++
+                
+            }
+            X = 1
+        
+            if(Spawned[toString(Failsafe+2),entity]:massCenter():distance(Spawned[toString(Failsafe-2),entity]:massCenter()) < 400){
+        
+                RopeID++
+                rope(RopeID,Spawned[toString(Failsafe+2),entity],Spawned[toString(Failsafe+2),entity]:massCenterL(),Spawned[toString(Failsafe-2),entity],Spawned[toString(Failsafe-2),entity]:massCenterL(),0,0,"xx",1)
+                #print("roped " + Spawned[toString(Failsafe+2),entity]:id() + " and " + Spawned[toString(Failsafe-2),entity]:id())
+                
+            }
+        
+            W = randint(1,WeatheringPresets:count()/7)*7
+            
+            while(X <= MDL[RandT+4,array]:count()/2){
+                 
+                Spawned[toString(Failsafe),entity]:setSubMaterial(MDL[RandT+4,array][X*2,number],WeatheringPresets[W-(7-MDL[RandT+4,array][X*2-1,number]),string])
+                X++
+                
+            }
+            
+            X = 1
+            
+            Spawned[toString(Failsafe+1),entity]:setSubMaterial(1,"models/proppertextures/wheel")
+            Spawned[toString(Failsafe+1),entity]:setSubMaterial(2,"models/proppertextures/wheel")
+            Spawned[toString(Failsafe+1),entity]:setSubMaterial(3,"models/props_gulch/tinycars/tc_darkgray")
+            Spawned[toString(Failsafe+1),entity]:propPhysicalMaterial("friction_00")
+            
+            Spawned[toString(Failsafe+2),entity]:setSubMaterial(1,"models/proppertextures/wheel")
+            Spawned[toString(Failsafe+2),entity]:setSubMaterial(2,"models/proppertextures/wheel")
+            Spawned[toString(Failsafe+2),entity]:setSubMaterial(3,"models/props_gulch/tinycars/tc_darkgray")
+            Spawned[toString(Failsafe+2),entity]:propPhysicalMaterial("friction_00")
+            
+            Spawned[toString(Failsafe),entity]:setColor(randtoRGB(MDL[RandT+5,vector],MDL[RandT+6,vector]))
+            #Spawned[toString(Failsafe),entity]:setColor(toRGB(MarkColors[(ID-1)/4,vector]))
+            
+            
+            
+            Spawned[toString(Failsafe),entity]:setSkin(randint(MDL[RandT+7,vector2]:x(),MDL[RandT+7,vector2]:y()))
+            
+            axis(Spawned[toString(Failsafe+1),entity],Spawned[toString(Failsafe+1),entity]:massCenterL(),Spawned[toString(Failsafe),entity],Spawned[toString(Failsafe),entity]:toLocal(Spawned[toString(Failsafe+1),entity]:massCenter()),0,vec(0,0,1))
+            axis(Spawned[toString(Failsafe+2),entity],Spawned[toString(Failsafe+2),entity]:massCenterL(),Spawned[toString(Failsafe),entity],Spawned[toString(Failsafe),entity]:toLocal(Spawned[toString(Failsafe+2),entity]:massCenter()),0,vec(0,0,1))
+            
+            TotalTrainLength += carLength(Spawned[toString(Failsafe),entity])*2
+            
+            #print("added " + carLength(Spawned[toString(Failsafe),entity])*2)
+            
+            CarsToSpawn--
+            
+        }
+        
+    }else{
+    
+        #Print = Print:add(array("No type selected!"))
+        CarsToSpawn = 0
+        
+    }
+
+}elseif(CarsToRemove & minquota() > Quota){    
+        
+    TotalTrainLength -= carLength(Spawned[toString(ID-3),entity])*2
+    
+    #print("removed " + carLength(Spawned[toString(ID-3),entity])*2)
+    
+    #Print = Print:add(array(Spawned[toString(ID-3),entity]:model()))
+    
+    Spawned[toString(ID-1),entity]:propDelete()
+    Spawned[toString(ID-2),entity]:propDelete()
+    Spawned[toString(ID-3),entity]:propDelete()
+    Spawned:remove(toString(ID-1))
+    Spawned:remove(toString(ID-2))
+    Spawned:remove(toString(ID-3))
+    CarsToRemove--
+        
+    ID = clamp(ID - 3,1,9^9^9)      
+    
+}
