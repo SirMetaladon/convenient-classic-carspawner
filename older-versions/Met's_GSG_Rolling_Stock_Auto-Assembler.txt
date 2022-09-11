@@ -1,0 +1,403 @@
+@name Met's GSG Rolling Stock Auto-Assembler
+@persist Tilt DeleteAfterDone NumCars Type Load Rectified Spawning CarDist CarCount RopeWidth Rope Addlength MassMul
+@persist [RopeMat BogiePhys]:string
+@persist [E Bogie1 Bogie2 Bogie3 Bogie4 Frame1 Frame2]:entity
+@persist [Models BogiePos CouplerDist Skin Mass Carray AID]:array
+@trigger all
+@model models/gsgtrainprops/parts/trucks/barber_s2hd.mdl
+
+#[
+####MADE BY SIR METALADON####
+
+#INTRO# 
+This is Sir Metaladon's Rolling Stock Auto-Assembler!
+It's designed to rival Magnum's in usability, but with a fundamentally diffferent mode of operation.
+
+Core features include:
+Single-command use (No more chat spam!)
+Automatic error detection(No more broken cars!)
+High customisation(Every train can be different!)
+Only spawner for GSG's Stock! (Cool cars!)
+
+To use this E2, simply type !spawn
+Number Type (see table below)
+Number Load (0-2, 2 only currently affects 52ft gondola's 2nd load)),
+Number of Cars to spawn (up to 50 per)
+
+Example: !spawn 1 1 10 
+This would spawn a 10 car long Loaded Autorack train.
+
+##COMMANDS##
+
+!delete 
+Deletes the E2
+
+!undo (number undone)
+Undoes X number of cars. You can also do !undo all
+
+!kill
+Stops the spawning process. Essentially a kill switch.
+
+###LOOKUP TABLE###
+
+This is what the first number in the !spawn command corresponds to.
+
+1 = Normal Autoracks
+2 = 52ft Gondolas
+3 = Covered Hoppers
+4 = Coal Bathtub Hoppers
+5 = Fertiliser Bathtub Hoppers
+6 = Thrall Coal Bathtub Gondolas
+7 = All cars, randomly picked
+8 = Mixed Freight (no autoracks or trashflats)
+9 = Mixed Gondolas (2,4,5, and 6 randomised)
+10 = Old Autoracks
+11 = Trashflats
+
+]#
+
+if(first()|dupefinished()){
+    
+    Version = "v1 RELEASE CANIDATE"
+    
+    ##Config##
+    
+    Tilt = 2 #Defines tilt (in degrees). Higher tilt = more side-to-side tilting, and more grade climing abilites, but tends to lean more and more off-center.
+    DeleteAfterDone = 0 #Deletes the E2 after you've finished spawning cars.
+    MassMul = 0.5 #Multiplier for the total mass of every car.
+    Rope = 1 #If 0, ropes will not be made, and you can connect cars yourself.
+    Addlength = 0 #Addlength for the Ropes connecting each car (reccomended 0)
+    RopeWidth = 0 #Rope width for Ropes connecting each car. You can set it to 0 for invisible ropes.
+    BogiePhys = "gmod_ice" #Bogie physical properties. "gmod_ice" is reccomended.
+    RopeMat = "cable/cable2" #Rope texture. Incorrect texture will result in errors. "cable/cable2" is reccomended.
+
+
+
+    ##End Config, don't mess with anything else!##
+
+    
+    #DATA STORAGE#
+    
+    Models = array(
+    "models/gsgtrainprops/trains/rolling_stock/autorack.mdl",
+    "models/gsgtrainprops/trains/rolling_stock/gon_52ft.mdl",
+    "models/gsgtrainprops/trains/rolling_stock/gon_52ft_2.mdl",
+    "models/gsgtrainprops/trains/rolling_stock/hopper_covered1.mdl",
+    "models/gsgtrainprops/trains/rolling_stock/hopper_covered_grain.mdl",
+    "models/gsgtrainprops/trains/rolling_stock/cp_bathtub.mdl",
+    "models/gsgtrainprops/trains/rolling_stock/cp_bathtub.mdl",
+    "models/gsgtrainprops/trains/rolling_stock/thrall_bathtub.mdl",
+    "models/gsgtrainprops/trains/rolling_stock/autorack_bilevel_old.mdl",
+    "models/gsgtrainprops/trains/rolling_stock/autorack_trilevel_old.mdl",
+    "models/gsgtrainprops/trains/rolling_stock/trashflat.mdl"
+    )
+    
+    BogiePos = array(
+    405,
+    255,
+    255,
+    275,
+    275,
+    275,
+    275,
+    235,
+    403,
+    403,
+    403
+    )
+    
+    CouplerDist = array(
+    162,
+    80,
+    80,
+    83,
+    83,
+    81,
+    81,
+    76,
+    161,
+    161,
+    161
+    )
+    
+    Skin = array(
+    0,9,
+    0,2,
+    0,7,
+    0,3,
+    0,7,
+    0,3,
+    4,7,
+    0,15,
+    0,2,
+    0,3,
+    0,2
+    )
+    
+    Mass = array(
+    20000,40000,
+    10000,25000,
+    10000,25000,
+    20000,30000,
+    20000,30000,
+    20000,30000,
+    20000,30000,
+    15000,35000,
+    15000,35000,
+    20000,40000,
+    15000,25000
+    )
+    
+    E=entity()
+    
+    E:propPhysicalMaterial("ice")
+    
+    Spawning = 0
+    Rectified = 0
+    Load = 0
+    CarDist = 0
+    Type = 0
+    CarCount = 0
+    
+    runOnChat(1)
+    holoCreate(1,(E:toWorld(vec(42,0,0))),vec(1),(E:toWorld(ang(90,0,0))),vec(0,255,0),"models/sprops/misc/cones/size_2/cone_24x30.mdl")
+    holoParent(1,E)
+    holoMaterial(1,"sprops/textures/sprops_metal5")
+    
+    setName("Met's GSG Rolling Stock Auto-Assembler "+ Version)
+    
+    print("New to this car spawner? Type !help and !info to see information on using this E2! Look inside the E2 for a more detailed tutorial, and config!")
+    
+    noCollideAll(E,0)
+}
+
+if(chatClk(owner())){
+    LS=owner():lastSaid()
+    
+    if(LS=="!help"){print("To use this E2, simply type !spawn (number type) (number load type) (number of cars)"),hideChat(1)}
+    
+    if(LS=="!info"){print("There are 11 different spawning types, 2 load types, and up to 50 cars per spawn"),hideChat(1)}
+    
+    if(LS=="!delete"){print("E2 deleted, good luck on the rails!"),hideChat(1),selfDestruct()}
+    
+    if(LS:find("!spawn")){
+    
+        hideChat(1)
+    
+        ARR = LS:explode(" ")
+        
+        Type = ARR[2,string]:toNumber()
+        
+        if(Type == 1){print("Type set to Autoracks")}
+        elseif(Type == 2){print("Type set to 52ft Gondolas")}
+        elseif(Type == 3){print("Type set to Covered Hoppers")}
+        elseif(Type == 4){print("Type set to Coal Bathtub Gondolas")}
+        elseif(Type == 5){print("Type set to Fertilizer Bathtub Gondolas")}
+        elseif(Type == 6){print("Type set to Thrall Gondolas")}
+        elseif(Type == 7){print("Type set to Random Everything")}
+        elseif(Type == 8){print("Type set to Mixed Freight")}
+        elseif(Type == 9){print("Type set to Mixed Gondolas")}
+        elseif(Type == 10){print("Type set to Old Autoracks")}
+        elseif(Type == 11){print("Type set to Trash Flatcars")}
+        else{print("Invalid Type!"),Invalid = 1}
+        
+        Load = ARR[3,string]:toNumber()
+        
+        if(Load == 0){print("Load set to None")}
+        elseif(Load == 1){print("Load Type 1 (Scrap/Coal/Fertilizer")}
+        elseif(Load == 2){print("Load Type 2 (Covered Load)")}
+        else{print("Invalid Load!"),Invalid = 1}
+        
+        NumCars = ARR[4,string]:toNumber()
+        
+        if(NumCars <= 0 | NumCars > 50){print("Invalid amount of Cars!"),Invalid = 1}
+        
+        if(Invalid != 1){
+            Spawning = 1
+        }
+        Invalid = 0
+
+        
+
+        
+    }
+    
+    if(LS == "!kill"){
+        Spawning = 0
+        Rectified = 0
+        print("Spawning process canceled!")
+    }
+    
+    if(LS:find("!undo")){
+        
+        UndoCars = LS:sub(6,8):toNumber()
+        
+        if(LS:find("all")){
+            UndoCars = UndoCars + CarCount
+        }
+        
+        Spawning = 0
+        Rectified = 0
+        
+        UndoCars = clamp(UndoCars,0,CarCount)
+        
+        ToUndo=UndoCars
+        
+        hideChat(1)
+        
+        function undo(){
+            if(ToUndo != 0){
+                Carray[CarCount*3,entity]:propDelete()
+                Carray[(CarCount*3)-1,entity]:propDelete()
+                Carray[(CarCount*3)-2,entity]:propDelete()
+                CarDist = CarDist - (CouplerDist[AID[CarCount,number],number]*2) - (BogiePos[AID[CarCount,number],number])*2
+                Carray:remove(CarCount*3)
+                Carray:remove((CarCount*3)-1)
+                Carray:remove((CarCount*3)-2)
+                AID:remove(CarCount)
+                ToUndo--
+                CarCount--
+                undo()
+            }else{
+                print(UndoCars + " Cars undone!")
+            }
+            
+        }
+        undo()
+        
+    }
+    
+}
+
+interval(1000)
+
+if(Spawning == 1 & Rectified == 0 & !chatClk() & propCanCreate()){
+    E:setAng(ang(0,round(E:angles():yaw()/45,0)*45,0))
+    Rectified=1
+    E:propFreeze(1)
+    E:propMakePersistent(1)
+    
+}elseif(Spawning == 1 & Rectified == 1 & !chatClk()){
+    Rectified = 2
+}
+
+if(Spawning == 1 & Rectified == 2 & !chatClk()){
+    if(Type == 1){ID = 1}
+    elseif(Type == 2){ID = 2+randint(0,1)}
+    elseif(Type == 3){ID = 4+randint(0,1)}
+    elseif(Type == 4){ID = 6}
+    elseif(Type == 5){ID = 7}
+    elseif(Type == 6){ID = 8}
+    elseif(Type == 7){ID = randint(1,11)}
+    elseif(Type == 8){ID = randint(2,8)}
+    elseif(Type == 9){ID = select(randint(1,4),2,3,6,7,8)}
+    elseif(Type == 10){ID = randint(9,10)}
+    elseif(Type == 11){ID = 11}
+
+    
+    CarDist=CarDist+CouplerDist[ID,number]
+    Frame=propSpawn(Models[ID,string],E:toWorld(vec(CarDist+BogiePos[ID,number],0,-15)),E:toWorld(ang(0,0,0)),1)
+    Frame:setSkin(randint(Skin[(ID*2)-1,number],Skin[ID*2,number]))
+    Frame:setMass(clamp(MassMul*Mass[(ID*2)-1+clamp(Load,0,1),number],5000,50000))
+    
+    if(ID == 2 | ID == 3){
+        Frame:setBodygroup(1,Load)
+        
+    }elseif(ID == 11){
+        Frame:setBodygroup(1,randint(0,2))
+        
+    }else{
+        Frame:setBodygroup(1,clamp(Load,0,1))
+    }
+    
+    CarDist=CarDist+(BogiePos[ID,number]*2)+CouplerDist[ID,number]
+
+    if(CarCount%2!=0){Frame2=Frame}else{Frame1=Frame}
+
+    BogieFront=propSpawn("models/gsgtrainprops/parts/trucks/barber_s2hd.mdl",Frame:toWorld(vec(BogiePos[ID,number],0,17)),Frame:toWorld(ang(0,0,0)),1)
+    BogieBack=propSpawn("models/gsgtrainprops/parts/trucks/barber_s2hd.mdl",Frame:toWorld(vec(-BogiePos[ID,number],0,17)),Frame:toWorld(ang(0,0,0)),1)
+    
+    BogieFront:setMass(clamp(MassMul*Mass[(ID*2)-1+clamp(Load,0,1),number],5000*(2/3),25000)*(2/3))
+    BogieBack:setMass(clamp(MassMul*Mass[(ID*2)-1+clamp(Load,0,1),number],5000*(2/3),25000)*(2/3))
+    
+    BogieFront:propPhysicalMaterial(BogiePhys)
+    BogieBack:propPhysicalMaterial(BogiePhys)
+
+    Carray = Carray:add(array(Frame,BogieFront,BogieBack))
+
+    if(CarCount%2!=0){Bogie1=BogieFront,Bogie2=BogieBack}else{Bogie3=BogieFront,Bogie4=BogieBack}
+    
+    
+    
+    if(CarCount%2==0){
+        if(Bogie1:model()!=""&Bogie4:model()!="" & Rope != 0){
+            rope(NumCars,Bogie1,Bogie1:massCenterL(),Bogie4,Bogie4:massCenterL(),Addlength,RopeWidth,RopeMat,1)
+        }
+    
+    }else{
+        if(Bogie1:model()!=""&Bogie4:model()!="" & Rope != 0){
+            rope(NumCars,Bogie3,Bogie3:massCenterL(),Bogie2,Bogie2:massCenterL(),Addlength,RopeWidth,RopeMat,1)
+        }
+        
+    }
+    
+    noCollide(Frame1,Frame2)
+    ballsocket(BogieFront,BogieFront:massCenterL(),Frame,vec(-Tilt,-Tilt,-180),vec(Tilt,Tilt,180),vec(0,0,0))
+    ballsocket(BogieBack,BogieBack:massCenterL(),Frame,vec(-Tilt,-Tilt,-180),vec(Tilt,Tilt,180),vec(0,0,0))
+
+    NumCars--
+    CarCount++
+    AID = AID:add(array(ID))
+    
+}
+
+if(changed(CarCount) & !first() & !dupefinished()){
+    print("Current Consist Carcount:"+CarCount)
+}
+
+if(CarCount*3 != Carray:count() & Spawning == 1){
+    print("Defective Car detected! Respawning....")
+
+        
+    NumCars++
+    CarCount--
+        
+    CarDist = CarDist + (-(CouplerDist[AID[AID:count(),number],number] + BogiePos[AID[AID:count(),number],number])*2)
+
+    AID:remove(AID:count())        
+        
+    function fix(){
+        if(Carray:count()%3 != 0){
+            Carray[Carray:count(),entity]:propDelete()
+            Carray:remove(Carray:count())
+            fix()
+        }else{
+            print("Fixed!")
+        }
+            
+    }
+        
+        
+    fix()    
+        
+    E:soundPlay(2,3,"buttons/button10.wav")
+    soundPitch(2,100)
+    soundVolume(2,1)
+        
+}
+
+if(NumCars == 0 & Spawning == 1 & Rectified == 2 & !chatClk()){
+    Spawning = 0
+    Rectified = 0
+    owner():soundPlay(1,2,"ambient/chamber_open.wav")
+    soundPitch(1,100)
+    soundVolume(1,0.5)
+    
+    if(DeleteAfterDone == 1){
+        print("E2 deleted, good luck on the rails!")
+        selfDestruct()
+    }
+    
+        
+}
+
