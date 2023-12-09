@@ -990,6 +990,7 @@ if(first()){
         }else{
             if(Str:find("magphx")){return array(1,1)}elseif(Str:find("magold")){return array(2,1,1,1)}  
         }
+        return array()
     }
         
     function number modelLength(N){ #Determines the length of a model
