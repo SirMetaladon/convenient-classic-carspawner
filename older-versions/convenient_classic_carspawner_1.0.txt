@@ -1,0 +1,2493 @@
+@name Convenient Classic Carspawner 1.0
+
+@outputs SID
+
+@persist Failsafe Quota HideChat S X Y Z N TC TB Loaded RopeID TotalTrainLength TotalTrainWeight CTS Phase CTR Up HOLID CarCount Type Rerender SID HoloCount PropCount HowMany D
+@persist RandT W Fail Angle NewPos DELT FUNC DEBU Part Attr NoDef XO MdlTag INCR HUEEE WX DD LTS LTR WTS WTR Spacer TQ LC Spd US Mode Taglist BaseAngle InvalidBogie ModeRot Process Prc NxPs AddPhase
+@persist [Bogie PoolTrack Version Str Str2 Roads CarTypes]:string [Eye Pos Origin]:vector [E Ent]:entity [TxClr]:vector2 
+
+@persist [MDL TagAttributes Tags Spawned TagDefaults SvData Prt Car Add]:table
+@persist [Print WeatheringPresets LS Pool Colors]:array  
+#[
+If you're seeing this from the Github page, here's some instructions on how to install the E2:
+
+1: Select the RAW option on the right. This will take you to a blank page with the script on it.
+
+2: Right-click the screen and select "Save As". Save the file to your downloads as the default name.
+
+3: Move that text file to steam directory/common/garrysmod/garrysmod/data/expression2.
+
+4: Click "Refresh" on the E2 tool sidebar interface in Garry's Mod.
+
+5: Find the file by searching "carspawner" or some other keyword from the file name.
+
+6: Double click on the file to open it, then click the X at the top-right to close the window.
+
+7: Left-click on the ground with the E2 tool, and align the chip with the rails you wish to spawn on.
+
+8: Done! Follow the ingame tutorial after you've placed the chip for usage and how-to's.
+]#
+
+#Instructions on how to change to RSG/PHX:
+
+#Change the carspawner's model to "models/magtrains/trucks/barber_s2_phx.mdl" or "models/magtrains/trucks/barber_s2_rsg.mdl" to use PHX or RSG respectivley.
+#vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
+#vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
+@model models/magtrains/trucks/barber_s2_phx.mdl
+#@model models/magtrains/trucks/barber_s2_rsg.mdl
+#@model models/joe/bogies/2ft_2.mdl
+#@model models/akandr/russian/bogie/cnii_hz_5ft.mdl
+#^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+#^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+# (Or, uncomment out one of these 3 lines by removing the # from in front of one of them)
+
+#[
+      ____                            _            _       
+     / __ \                          (_)          | |      
+    | /  \/ ___  _ ____   _____ _ __  _  ___ _ __ | |_     
+    | |    / _ \| '_ \ \ / / _ \ '_ \| |/ _ \ '_ \| __|    
+    | \__/\ (_) | | | \ V /  __/ | | | |  __/ | | | |_     
+     \____/\___/|_| |_|\_/ \___|_| |_|_|\___|_| |_|\__|                                                        
+                ____ _               _                     
+               /  _ \ |             (_)                    
+              | /  \/ | __ _ ___ ___ _  ___                
+              | |   | |/ _` / __/ __| |/ __|               
+              | \__/\ | (_| \__ \__ \ | (__                
+               \____/_|\__,_|___/___/_|\___|                                                                                       
+  ____                                                     
+ / __ \                                                    
+| /  \/ __ _ _ __ ___ _ __   __ ___      ___ __   ___ _ __ 
+| |    / _` | '__/ __| '_ \ / _` \ \ /\ / / '_ \ / _ \ '__|
+| \__/\ (_| | |  \__ \ |_) | (_| |\ V  V /| | | |  __/ |   
+ \____/\__,_|_|  |___/ .__/ \__,_| \_/\_/ |_| |_|\___|_|   
+                     | |                                   
+                     |_|                                   
+               ___   ____   ____   ____  ___                  
+              |  _| / __ \ / __ \ / __ \|_  |                 
+              | |  | /  \/| /  \/| /  \/  | |                 
+              | |  | |    | |    | |      | |                 
+              | |  | \__/\| \__/\| \__/\  | |                 
+              | |_  \____/ \____/ \____/ _| |                 
+              |___|                     |___|  
+             
+            
+Welcome to the Convenient, Classic Carspawner! This E2 is the next generation in car spawning technologies, allowing the user to spawn many styles of train, pre-detailed, and in an intuitive manner.
+
+Type ".help" in chat for a guide on how to use the E2. It will show you through all you need to know on running this E2.
+
+
+Not much of a description here, if you want more, bug me on Discord or Steam.
+
+Made by Sir Metaladon:  https://steamcommunity.com/profiles/76561198077247660/
+
+]#
+
+if(first()|dupefinished()){
+    
+    #Here's some settings for those who are so inclined:
+    
+    Mode = 1 #If 1, the Carspawner will use the New bogies for spawning cars. Else, it will use the old PHX bogies. If you wish to switch this carspawner to RSG, simply change the #model line above.
+    
+    TQ = 0.5 #The modifier on the weight of cars spawned by the chip. 1 is the default, spawning cars that average ~100 tons (average loaded weight IRL). 0.75 would reduce that average to 75 tons. 
+    
+    LC = 0.6 #Chance the car will be loaded (heavier). Default is 0.6, or 60% chance, since railroads often re-load cars on the return trip. Loaded cars are usually 3 or 4 times heavier than empty cars.
+    
+    
+    #Default Tags. DO NOT EDIT UNLESS YOU KNOW WHAT YOU'RE DOING, else it WILL BREAK THE E2!
+    
+    
+    TagDefaults = table(
+    
+        array(), #Type of car
+        array("80s"), #Era of car
+        array(), #Who made it
+        array(), #Suspension type
+        array("knuckle"), #Link type
+        array("freight"), #Catergory of car
+        array(), #Stability of car
+        array("mdetail","hdetail"), #Detail level
+        array("cheap","average","expensive"), #Entity Cost
+        array("realistic","protolance","freelance"), #Realism
+        array("usamerican") #Country
+        
+    )
+    
+    # The default tags are Era = "80s", Catergory = "freight", Detail level = "mdetail, hdetail" and Country = "usamerican"
+    
+    
+    
+    
+    
+    Multipliers = array(	#Multipliers for tags
+    	
+        "metaladon",1.2,	
+        "union",0.6,		
+        "hdetail",1.25,	
+        "ldetail",0.75	
+        	
+    )
+    
+    
+    #NO TOUCHING BEYOND THIS POINT
+
+    #Weathering presets, in order from least to most weathered
+    
+    WeatheringPresets = array(
+        
+        "models/proppertextures/acrylic","sprops/trans/lights/light_plastic","models/proppertextures/enamel_black","phoenix_storms/wood_dome","models/proppertextures/acrylic_black","models/proppertextures/aluminum","models/magtrains/coal","models/proppertextures/acrylic_gold",
+        "wtp/paint_2","sprops/trans/lights/light_plastic","models/proppertextures/enamel_black","phoenix_storms/wood_dome","models/proppertextures/acrylic_black","models/proppertextures/aluminum","models/magtrains/coal","models/proppertextures/acrylic_gold",
+        "models/proppertextures/acrylic","sprops/textures/sprops_metal5","models/proppertextures/enamel_black","phoenix_storms/wood_dome","models/proppertextures/acrylic_black","models/proppertextures/aluminum","models/magtrains/coal","models/proppertextures/acrylic_gold",
+        "wtp/paint_2","sprops/textures/sprops_metal5","models/proppertextures/enamel_black","phoenix_storms/wood_dome","models/proppertextures/acrylic_black","models/proppertextures/aluminum","models/magtrains/coal","models/proppertextures/acrylic_gold",
+        
+        "sprops/trans/lights/light_plastic","phoenix_storms/concrete1","icegt/loco/ice_trainmetal_black","models/props_gulch/woodshelf008a","models/props_gulch/tinycars/tc_darkgray","icegt/loco/ice_trainmetal_grey","models/magtrains/coal","models/proppertextures/acrylic_gold",
+        "sprops/textures/sprops_metal5","sprops/textures/sprops_metal1","icegt/loco/ice_trainmetal_black","models/props_gulch/woodshelf008a","models/props_gulch/tinycars/tc_darkgray","icegt/loco/ice_trainmetal_grey","models/magtrains/coal","models/proppertextures/acrylic_gold",
+        "sprops/trans/lights/light_plastic","sprops/textures/sprops_metal1","icegt/loco/ice_trainmetal_black","models/props_gulch/woodshelf008a","models/props_gulch/tinycars/tc_darkgray","icegt/loco/ice_trainmetal_grey","models/magtrains/coal","models/proppertextures/acrylic_gold",
+        "sprops/textures/sprops_metal5","phoenix_storms/concrete1","icegt/loco/ice_trainmetal_black","models/props_gulch/woodshelf008a","models/props_gulch/tinycars/tc_darkgray","icegt/loco/ice_trainmetal_grey","models/magtrains/coal","models/proppertextures/acrylic_gold",
+        
+        "wtp/metal_2","wtp/metal_5","icegt/loco/ice_trainmetal_black","models/props_forest/sawmill_wood","models/props_gulch/tinycars/tc_darkgray","icegt/loco/ice_trainmetal_darkgrey","models/magtrains/coal","models/props_gulch/tinycars/tc_gold",
+        "wtp/metal_2","wtp/metal_5","icegt/loco/ice_trainmetal_black","models/props_forest/sawmill_wood","models/props_gulch/tinycars/tc_darkgray","icegt/loco/ice_trainmetal_darkgrey","models/magtrains/coal","models/props_gulch/tinycars/tc_gold",
+        
+        "models/props_gulch/tinycars/tc_colorable","sprops/textures/sprops_metal3","models/props_gulch/tinycars/tc_darkgray","models/props_forest/sawmill_wood","sprops/trans/misc/ls_m1","icegt/loco/ice_trainmetal_grey","models/magtrains/coal","models/props_gulch/tinycars/tc_gold",
+        "models/props_gulch/tinycars/tc_colorable","models/props_c17/metalladder001","models/props_gulch/tinycars/tc_darkgray","models/props_forest/sawmill_wood","sprops/trans/misc/ls_m1","icegt/loco/ice_trainmetal_grey","models/magtrains/coal","models/props_gulch/tinycars/tc_gold",
+        "sprops/textures/sprops_metal2","sprops/textures/sprops_metal3","models/props_gulch/tinycars/tc_darkgray","models/props_forest/sawmill_wood","sprops/trans/misc/ls_m1","icegt/loco/ice_trainmetal_grey","models/magtrains/coal","models/props_gulch/tinycars/tc_gold",
+        "sprops/textures/sprops_metal2","models/props_c17/metalladder001","models/props_gulch/tinycars/tc_darkgray","models/props_forest/sawmill_wood","sprops/trans/misc/ls_m1","icegt/loco/ice_trainmetal_grey","models/magtrains/coal","models/props_gulch/tinycars/tc_gold",
+        "wtp/metal_5","sprops/textures/sprops_metal3","models/props_gulch/tinycars/tc_darkgray","models/props_forest/sawmill_wood","sprops/trans/misc/ls_m1","icegt/loco/ice_trainmetal_grey","models/magtrains/coal","models/props_gulch/tinycars/tc_gold",
+        "wtp/metal_5","models/props_c17/metalladder001","models/props_gulch/tinycars/tc_darkgray","models/props_forest/sawmill_wood","sprops/trans/misc/ls_m1","icegt/loco/ice_trainmetal_grey","models/magtrains/coal","models/props_gulch/tinycars/tc_gold"
+        
+    )
+    
+    WX = 8 #How many strings per preset
+    
+    #Color presets
+    
+    Colors = array(    
+        
+        vec(-2.5,0.6,0.25),vec(8,0.1,0.02), #RED 1 
+        vec(18,0.6,0.35),vec(28,0.1,0.05), #ORANGE 2 
+        vec(-2.5,0.1,0.8),vec(240,0.1,0.15), #WHITE 3 
+        vec(42.5,0.62,0.47),vec(47.5,0.06,0.03), #YELLOW 4
+        vec(75,0.35,0.3),vec(125,0.1,0.05), #GREEN 5  
+        vec(190,0.35,0.3),vec(230,0.15,0.1),  #BLUE 6 
+        vec(-2.5,0.02,0.17),vec(47.5,0.02,0.03), #BLACK 7 
+        vec(-2.5,0.02,0.4),vec(47.5,0.02,0.1), #GREY - 8
+        vec(40,0.1,0.4),vec(55,0.025,0.125), #ALUMINUM - 9
+        vec(-2.5,0.25,0.35),vec(30,0.15,0.05), #WOOD - 10
+        vec(-2.5,0.3,0.3),vec(10,0.1,0.02), #TUSCAN - 11
+        vec(155,0.4,0.5),vec(160,0.07,0.03) #PC GREEN - 12
+        
+    )
+    
+    CL = (1-LC)
+    
+    #Tag Attributes
+    
+    TagAttributes = table(
+        
+        #Type of Car
+        array("general_boxcar_highcube_e","appliance_boxcar_highcube_e","autoparts_boxcar_highcube_e","general_boxcar_nonhigh_e", 
+            "general_boxcar_highcube_l","appliance_boxcar_highcube_l","autoparts_boxcar_highcube_l","general_boxcar_nonhigh_l",
+            "scrap_gondola_e","woodchips_gondola_e","ore_gondola_e","general_gondola_e","steel_gondola_e","water_tanker_e","coal_gondola_e","sand_gondola_e","gravel_gondola_e","trash_gondola_e",
+            "general_tanker_e","ethanol_tanker_e","lpg_tanker_e","chemical_tanker_e","oil_tanker_e",
+            "coal_hopper_e","grain_hopper_e","cement_hopper_e","aggregate_hopper_e","ore_hopper_e","gravel_hopper_e","sand_hopper_e","dolomite_hopper_e","potash_hopper_e",
+            "airslide_hopper_sugar_e","airslide_hopper_flour_e",
+            "log_flatcar_e","wood_flatcar_e","general_flatcar_e","heavy_flatcar_e","tofctrailer_flatcar_e","general_flatcar_bulkhead_e","trash_flatcar_e","steel_flatcar_e",
+            "centerbeam_flatcar_wood_e","centerbeam_flatcar_steel_e","centerbeam_flatcar_frames_e","centerbeam_flatcar_ties_e",
+            "single_wellcar_40ft_e","single_wellcar_48ft_e","single_wellcar_53ft_e","icereeferrefridgerator_e",
+            "trilevel_open_autorack_e","bilevel_open_autorack_e","bilevel_closed_autorack_e",
+            "scrap_gondola_l","woodchips_gondola_l","ore_gondola_l","general_gondola_l","steel_gondola_l","water_gondola_l","coal_gondola_l","sand_gondola_l","gravel_gondola_l","trash_gondola_l",
+            "general_tanker_l","ethanol_tanker_l","lpg_tanker_l","chemical_tanker_l","oil_tanker_l",
+            "coal_hopper_l","grain_hopper_l","cement_hopper_l","aggregate_hopper_l","ore_hopper_l","gravel_hopper_l","sand_hopper_l","dolomite_hopper_l","potash_hopper_l",
+            "airslide_hopper_sugar_l","airslide_hopper_flour_l",
+            "log_flatcar_l","wood_flatcar_l","general_flatcar_l","heavy_flatcar_l","tofctrailer_flatcar_l","general_flatcar_bulkhead_l","trash_flatcar_l","steel_flatcar_l",
+            "centerbeam_flatcar_wood_l","centerbeam_flatcar_steel_l","centerbeam_flatcar_frames_l","centerbeam_flatcar_ties_l",
+            "single_wellcar_40ft_l","single_wellcar_48ft_l","single_wellcar_53ft_l","icereeferrefridgerator_l",
+            "trilevel_open_autorack_l","bilevel_open_autorack_l","bilevel_closed_autorack_l",
+            "anytype","caboose","stock_e","stock_l",
+            "container_flatcar_e","container_flatcar_l"), 
+            
+        #Era of Car
+        array("modern","90s","80s","70s","60s","50s","40s","30s","20s","10s","preera","anytime"),
+        
+        #Who made it?
+        array("metaladon","gsgrove","magnum","union","joeconqueror","monkatraz","goomz","daylight","jazzie","anyone991","anyone","laz","priority","akandr"),
+        
+        #Type of Suspension
+        array("phx","rsg","2ft","5ft","gscale","3ft","adaptive","anysuspension"),
+        
+        #Link Type
+        array("knuckle","linkandpin","buffers","anyconnection"),
+        
+        #Catergory of Car
+        array("manifest","unitfreight","mow","buffer","passenger","freight","dummy","anykind","caboose","parts"),
+        
+        #Stability of Car
+        array("janky","functional"),
+        
+        #Detail Level
+        array("hdetail","mdetail","ldetail","anydetail"),
+        
+        #Entity Cost Tags
+        array("cheap","average","expensive","excessive","absurd","anycost"),
+         
+        #Realism Tags
+        array("realistic","protolance","freelance","meme","anyquality"),
+        
+        #Locale of Car
+        array("usamerican","ussrussian","european","anywhere","british","austrailian"),
+        
+        #Utility Tags
+        array("nodef","debug","mdltag"),
+        
+        #Load Tags
+        array("empty","loaded","invisiload"),
+
+        #Pack Tags
+        array("builtin","preset","metaladons_custom_cars","anypack"),
+        
+        #Roadname Tags
+        array("anyroad","nomarkless"),
+        
+        #Model Tags (automatically filled by the E2)
+        array()
+        
+    )
+    
+    for(X = 1, 25){ 
+        
+        CN = ""+X
+        
+        for(Y = 1,4-X:toString():length()){
+            
+            CN = "0"+CN
+            
+        }
+        
+        TagAttributes[1,array] = TagAttributes[1,array]:add(array("car_"+CN))
+        
+    }
+    
+    function table bogie(Parent,Length,Type,Height){	#function for quickly adding bogies
+        	
+        return table(Parent,"models/magtrains/trucks/barber_s2_phx.mdl",vec(0,Length,Height),ang(0,0,0),"submat",array(1,"models/props_gulch/tinycars/tc_colorable",7,"models/proppertextures/wheel",6,"models/props_gulch/tinycars/tc_lightgray"),
+        "axcom",array(abs(Parent),vec(0,0,1)),"bodygroup",array(0,vec(1,4,4)),"colorand",array(vec(80,60,50)*0.9,vec(90,65,55)*1.1))	
+        	
+    }
+    
+    function number carLength(Ent:entity){
+        
+        if(Ent:boxSize():y()-8 > Ent:boxSize():x()-8){
+        
+            return Ent:boxSize():y()-8
+            
+        }else{
+            
+            return Ent:boxSize():x()-8 
+        
+        }
+
+    }
+    holoCreate(1)
+    function number modelLength(Model:string){
+    
+        holoModel(1,Model)
+        
+        return carLength(holoEntity(1))
+        
+    }
+    
+    #HOW TO ADD A CAR
+    
+    #"models",ChanceToSpawn,"tags",vec(FromMountToMount,UpandDown,Rotation),array(MaterialType,MaterialSlot,MaterialType,MaterialSlot,etc,etc),
+    #array(#Red,#Orange,#White,#Yellow,#Green,#Blue,#Black,#Grey,#Aluminum,#Wood,#Tuscan),vec2(SkinMin,SkinMax),array(vec(Bodygroup,Minimum,Maximum),vec(etc,etc,etc),etc),vec2(Weight of Load,Chance to be Loaded),
+    
+    #[	
+    	
+    List of Cars, alphabetized.	
+     	
+    Parent IsHologram Model 	
+    	
+    	
+    	
+    	
+    List of Extra Commands: 	
+    	
+    	
+    posrand,array(vec(pos min),vec(pos max))	
+    poslave,array(master,vec(translation),vec(mirroraxis),rotation)	
+    colorand,vec(min),vec(max) 	
+    colorslave,master	
+    weather,array(type,slot,type,slot,etc)	
+    color,array(master,red,orange,white,yellow,green,blue,black,grey,aluminum,wood,tuscan)	
+    skin,vec(master,min,max)	
+    bodygroup,array(master,vec(slot,min,max),vec(slot,min,max),etc)	
+    axcom,array(parent,vec(localaxis))	
+    axis,array(vec(localpos),parent,vec(localaxis))	
+    slider,undef	
+    ballsoc,undef	
+    submat,array(slot,"material")	
+    material,"material"	
+    scale,vec(scale)	
+    scalerand,array(master,vec(scalemin),vec(scalemax),mult)	
+    holoclip,undef	 
+    physmat,"physmat"	
+    	
+    ]#	
+    	
+    #[Description of car data:	
+    	
+    1st Array: Basic, Overaching Info. 	
+    Chance to Spawn (aggregated across all possible types)	
+    Tags (string, usually country, load type, freight/other, manifest/other, suspension-gauge, detail level, modeler, era and make sure to add the apropriate model descriptor at the end)	
+    Car Length (coupled length, usually by applying modelLength() to your base model. add more for cars lacking full collisions or comprising multiple sets)	
+    Origin height off the railhead (need to measure this)	
+    Weight (vec2(tons avg load,loaded or unloaded) (bool))	
+    	
+    Next, props spawned:	
+    	
+    Parented/Relative To (0 for freestanding, negative for bogies)	
+    Model Name (string),	
+    Position (relative to the "parent")	
+    Angle (again relative)	
+    	
+    	
+    #Maybe add a check which applies CL/LC to the score of a car if it has the "invisiload" tag based on search parameters?	
+    #Add invisiload when either loaded or empty is searched.	
+
+    	
+    ]#
+     
+    MDL = table(
+    
+        table( ############################################################################################################################################################################################################################################################################################################
+            array(10,"usamerican general_tanker_l chemical_tanker_l general_tanker_e chemical_tanker_e invisiload freight manifest phxold hdetail daylight 20s 30s 40s ll_tankcar",
+            modelLength("models/daylight/ll_tankcar.mdl"),vec(50,LC,20),"****",vec2(1000,999999)),	
+            table(0,"models/daylight/ll_tankcar.mdl",vec(0,0,32),ang(0,90,0),"weather",array(1,1,3,3,2,4),"color",array(0,0,2,1,0,0,50,5),"bodygroup",array(vec(1,0,1))),	
+            bogie(-1,296/2,1,-6+32),	 
+            bogie(-1,-296/2,1,-6+32),	
+            table(2,"models/sprops/misc/tubes/size_2/tube_24x18.mdl",vec(0,0,9),ang(0,0,90),"weather",array(3,1),"colorcopy",2),
+            table(3,"models/sprops/misc/tubes/size_2/tube_24x18.mdl",vec(0,0,9),ang(0,0,90),"weather",array(3,1),"colorcopy",3),
+            table(1,"models/magtrains/reportingmark.mdl",vec(100,44,50),ang(90,0,-90),"road",0,"textcolor",array(1,7,3,3,7,8,4),"submat",array(1,"wtp/metal_2"),"posrand",array(vec(122,43.5,50),vec(80,43.5,53))),
+            table(1,"models/magtrains/reportingmark.mdl",vec(100,44,50),ang(90,0,90),"road",0,"colorcopy",6,"submat",array(1,"wtp/metal_2"),"poslave",array(6,vec(),180)),
+            table(1,"models/magtrains/runningnumber.mdl",vec(100,44,50),ang(105,90,0),"number",0,"colorcopy",6,"submat",array(1,"wtp/metal_2"),"poslave",array(6,vec(0,-2,-15),0),"scale",vec(1,0.65,1)),
+            table(1,"models/magtrains/runningnumber.mdl",vec(100,44,50),ang(105,-90,0),"number",0,"colorcopy",6,"submat",array(1,"wtp/metal_2"),"poslave",array(7,vec(0,2,-15),0),"scale",vec(1,0.65,1))
+        ),table( ############################################################################################################################################################################################################################################################################################################
+            array(10,"ussrussian general_boxcar_nonhigh_l general_boxcar_nonhigh_e invisiload freight wagon",modelLength("models/goomzmodels/rollingstock/rus 1612-10 box wagon.mdl")+20,vec2(50,LC),"****",vec2(1000,999999)),	
+            table(0,"models/goomzmodels/rollingstock/rus 1612-10 box wagon.mdl",vec(0,0,35),ang(0,90,0)),
+            table(-1,"models/akandr/russian/bogie/cnii_hz_phx.mdl",vec(0,376/2,34),ang(0,90,0),"axcom",array(1,vec(0,0,1))),
+            table(-1,"models/akandr/russian/bogie/cnii_hz_phx.mdl",vec(0,-376/2,34),ang(0,90,0),"axcom",array(1,vec(0,0,1)))	
+        ),table( ############################################################################################################################################################################################################################################################################################################
+            array(10,"usamerican general_boxcar_nonhigh_l general_boxcar_nonhigh_e invisiload freight manifest phxnew hdetail magnum 60s 70s 80s 90s modern",modelLength("models/magtrains/boxcar_50.mdl"),vec2(50,LC),"****",vec2(1000,999999)),	
+            table(0,"models/magtrains/boxcar_50.mdl",vec(0,0,28+18),ang(0,0,0)),
+            table(-1,"models/magtrains/trucks/barber_s2_phx.mdl",vec(0,448/2,28),ang(0,0,0),"submat",array(1,"models/props_gulch/tinycars/tc_colorable",7,"models/proppertextures/wheel",6,"models/props_gulch/tinycars/tc_lightgray",9,"models/proppertextures/wheel"),
+            "axcom",array(1,vec(0,0,1)),"bodygroup",array(vec(1,2,2)),"colorand",array(vec(80,60,50)*0.9,vec(90,65,55)*1.1)),	
+            table(-1,"models/magtrains/trucks/barber_s2_phx.mdl",vec(0,-448/2,28),ang(0,0,0),"submat",array(1,"models/props_gulch/tinycars/tc_colorable",7,"models/proppertextures/wheel",6,"models/props_gulch/tinycars/tc_lightgray",9,"models/proppertextures/wheel"),
+            "axcom",array(1,vec(0,0,1)),"bodygroup",array(vec(1,2,2)),"colorand",array(vec(80,60,50)*0.9,vec(90,65,55)*1.1))	
+        ),table(
+            array(10,"single_wellcar_53ft_l magtrains/intermodal/wellcar_53_middlemagtrains/intermodal/wellcar_53_frontmagtrains/intermodal/wellcar_53_rear",4174,vec2(0,LC),"****",vec2(1000,999999)),
+            table(0,"models/magtrains/intermodal/wellcar_53_middle.mdl",vec(0,0,28+18),ang(0,0,0),"weather",array(1,1,3,4,2,2),"color",array(1,0,0,10,0,1,0,0,0,0,2)),
+            table(0,"models/magtrains/intermodal/wellcar_53_middle.mdl",vec(0,800,28+18),ang(0,0,0),"weather",array(1,1,3,4,2,2),"colorcopy",1),
+            table(0,"models/magtrains/intermodal/wellcar_53_middle.mdl",vec(0,-800,28+18),ang(0,0,0),"weather",array(1,1,3,4,2,2),"colorcopy",1),
+            table(-1,"models/magtrains/trucks/barber_s2_phx.mdl",vec(0,-800/2,28),ang(0,0,0),"submat",array(1,"models/props_gulch/tinycars/tc_colorable",7,"models/proppertextures/wheel",6,"models/props_gulch/tinycars/tc_lightgray",9,"models/proppertextures/wheel"),
+            "bodygroup",array(0,vec(1,3,3)),"colorand",array(vec(80,60,50)*0.9,vec(90,65,55)*1.1),"axcom",array(1,vec(0,0,1)),"axcom",array(3,vec(0,0,1))),
+            table(-1,"models/magtrains/trucks/barber_s2_phx.mdl",vec(0,800/2,28),ang(0,0,0),"submat",array(1,"models/props_gulch/tinycars/tc_colorable",7,"models/proppertextures/wheel",6,"models/props_gulch/tinycars/tc_lightgray",9,"models/proppertextures/wheel"),
+            "bodygroup",array(0,vec(1,3,3)),"colorand",array(vec(80,60,50)*0.9,vec(90,65,55)*1.1),"axcom",array(1,vec(0,0,1)),"axcom",array(2,vec(0,0,1))),
+            table(0,"models/magtrains/intermodal/wellcar_53_rear.mdl",vec(0,1600,28+18),ang(0,0,0),"weather",array(1,2,3,3,2,4),"colorcopy",1),
+            table(0,"models/magtrains/intermodal/wellcar_53_front.mdl",vec(0,-1600,28+18),ang(0,0,0),"weather",array(1,1,3,4,2,2),"colorcopy",1),
+            table(-1,"models/magtrains/trucks/barber_s2_phx.mdl",vec(0,-2400/2,28),ang(0,0,0),"submat",array(1,"models/props_gulch/tinycars/tc_colorable",7,"models/proppertextures/wheel",6,"models/props_gulch/tinycars/tc_lightgray",9,"models/proppertextures/wheel"),
+            "bodygroup",array(0,vec(1,3,3)),"colorand",array(vec(80,60,50)*0.9,vec(90,65,55)*1.1),"axcom",array(3,vec(0,0,1)),"axcom",array(7,vec(0,0,1))),
+            table(-1,"models/magtrains/trucks/barber_s2_phx.mdl",vec(0,2400/2,28),ang(0,0,0),"submat",array(1,"models/props_gulch/tinycars/tc_colorable",7,"models/proppertextures/wheel",6,"models/props_gulch/tinycars/tc_lightgray",9,"models/proppertextures/wheel"),
+            "bodygroup",array(0,vec(1,3,3)),"colorand",array(vec(80,60,50)*0.9,vec(90,65,55)*1.1),"axcom",array(2,vec(0,0,1)),"axcom",array(6,vec(0,0,1))),
+            table(-1,"models/magtrains/trucks/barber_s2_phx.mdl",vec(0,-4000/2,28),ang(0,0,0),"submat",array(1,"models/props_gulch/tinycars/tc_colorable",7,"models/proppertextures/wheel",6,"models/props_gulch/tinycars/tc_lightgray",9,"models/proppertextures/wheel"),
+            "bodygroup",array(0,vec(1,3,3)),"colorand",array(vec(80,60,50)*0.9,vec(90,65,55)*1.1),"axcom",array(7,vec(0,0,1))),
+            table(-1,"models/magtrains/trucks/barber_s2_phx.mdl",vec(0,4000/2,28),ang(0,0,0),"submat",array(1,"models/props_gulch/tinycars/tc_colorable",7,"models/proppertextures/wheel",6,"models/props_gulch/tinycars/tc_lightgray",9,"models/proppertextures/wheel"),
+            "bodygroup",array(0,vec(1,3,3)),"colorand",array(vec(80,60,50)*0.9,vec(90,65,55)*1.1),"axcom",array(6,vec(0,0,1)))	 
+        ),table(
+            array(10,"austrailian 60s 70s 80s 90s modern westausman empty phx unitfreight manifest adaptive hdetail ave_q40",518.37506103516,vec(0,0.600427,0),"****",vec2(1000,999999)),
+            table(0,"models/wam98_trains/rolling_stock/container_flats/ave_q40.mdl",vec(0,0,15.5),ang(0,90,0),"submat",array(1,"wam98_textures/nrria/acrylic_robeyellow",3,"wam98_textures/nrria/acrylic_robeyellow",4,"models/proppertextures/enamel_black")),
+            table(1,"models/props_metaladon/parts/brakewheel.mdl",vec(67.5,-46,13),ang(0,180,0),"material","models/proppertextures/acrylic_white"),
+            table(-1,"models/magtrains/trucks/barber_s2_phx.mdl",vec(0,180,28),ang(0,0,0),"axcom",array(1,vec(0,0,1)),"submat",array(2,"models/proppertextures/enamel_black",9,"models/proppertextures/wheel"),"bodygroup",array(vec(1,1,1))),
+            table(-1,"models/magtrains/trucks/barber_s2_phx.mdl",vec(0,-180,28),ang(0,0,0),"axcom",array(1,vec(0,0,1)),"submat",array(2,"models/proppertextures/enamel_black",9,"models/proppertextures/wheel"),"bodygroup",array(vec(1,1,1))),
+            table(1,"models/props_metaladon/parts/brakewheel.mdl",vec(67.5,46,13),ang(0,0,0),"material","models/proppertextures/acrylic_white")
+        ),table(
+            array(10,"austrailian 60s 70s 80s 90s modern westausman empty phx freight unitfreight adaptive hdetail ave_q60",758.37506103516,vec(0,0.600427,0),"****",vec2(1000,999999)),
+            table(0,"models/wam98_trains/rolling_stock/container_flats/ave_q60.mdl",vec(0,0,15.5),ang(0,90,0),"submat",array(2,"wam98_textures/nrria/acrylic_robeyellow",3,"wam98_textures/nrria/acrylic_robeyellow",4,"models/proppertextures/enamel_black")),
+            table(1,"models/props_metaladon/parts/brakewheel.mdl",vec(63,-46,13),ang(0,180,0),"material","models/proppertextures/acrylic_white"),
+            table(-1,"models/magtrains/trucks/barber_s2_phx.mdl",vec(0,-263,28),ang(0,0,0),"axcom",array(1,vec(0,0,1)),"submat",array(2,"models/proppertextures/enamel_black",9,"models/proppertextures/wheel"),"bodygroup",array(vec(1,1,1))),
+            table(-1,"models/magtrains/trucks/barber_s2_phx.mdl",vec(0,263,28),ang(0,0,0),"axcom",array(1,vec(0,0,1)),"submat",array(2,"models/proppertextures/enamel_black",9,"models/proppertextures/wheel"),"bodygroup",array(vec(1,1,1))),
+            table(1,"models/props_metaladon/parts/brakewheel.mdl",vec(63,46,13),ang(0,0,0),"material","models/proppertextures/acrylic_white")
+        ),table(
+            array(10,"austrailian 60s 70s 80s 90s modern westausman empty phx freight unitfreightt adaptive hdetail ave_q80",998.37506103516,vec(0,0.600427,0),"****",vec2(1000,999999)),
+            table(0,"models/wam98_trains/rolling_stock/container_flats/ave_q80.mdl",vec(0,0,15.5),ang(0,90,0),"submat",array(1,"wam98_textures/nrria/acrylic_robeyellow",3,"wam98_textures/nrria/acrylic_robeyellow",4,"models/proppertextures/enamel_black")),
+            table(1,"models/props_metaladon/parts/brakewheel.mdl",vec(85.5,-46,13),ang(0,180,0),"material","models/proppertextures/acrylic_white"),
+            table(1,"models/props_metaladon/parts/brakewheel.mdl",vec(85.5,46,13),ang(0,0,0),"material","models/proppertextures/acrylic_white"),
+            table(-1,"models/magtrains/trucks/barber_s2_phx.mdl",vec(0,-383,28),ang(0,0,0),"axcom",array(1,vec(0,0,1)),"submat",array(2,"models/proppertextures/enamel_black",9,"models/proppertextures/wheel"),"bodygroup",array(vec(1,1,1))),
+            table(-1,"models/magtrains/trucks/barber_s2_phx.mdl",vec(0,383,28),ang(0,0,0),"axcom",array(1,vec(0,0,1)),"submat",array(2,"models/proppertextures/enamel_black",9,"models/proppertextures/wheel"),"bodygroup",array(vec(1,1,1)))
+        ),table(
+            array(10,"coal_hopper_e linnie austrailian rsg 90s empty modern freight unitfreight adaptive hdetail wagon_nhff",657,vec(0,0.600427,0),"****",vec2(1000,999999)),
+            table(0,"models/nhff/wagon_nhff.mdl",vec(0,0,46),ang(0,-89.9,0),"setcolor",vec(100,95,90),"submat",array(2,"models/proppertextures/acrylic_grimey",3,"models/proppertextures/acrylic_grimey",5,"models/proppertextures/acrylic_white"),"bodygroup",array(vec(2,1,1),vec(4,1,1),vec(5,1,1),vec(6,3,3),vec(7,2,2),vec(8,1,1),vec(9,1,1))),
+            table(-1,"models/nhff/bogie_gloucester_dca.mdl",vec(0.9,-255.2,30.2),ang(0,89.7,0),"axcom",array(1,vec(0,0,1)),"submat",array(6,"models/proppertextures/enamel_gray")),
+            table(-1,"models/nhff/bogie_gloucester_dca.mdl",vec(0.4,255,35.3),ang(0,93.1,0),"axcom",array(1,vec(0,0,1)),"submat",array(6,"models/proppertextures/enamel_gray"))
+        ),table(
+            array(10,"usamerican joeconqueror general_tanker_l general_tanker_e invisiload 2ft freight linkandpin flat_car",299,vec(0,0.600427,0),"****",vec2(1000,999999)),
+            table(0,"models/joe/rolling_stock/2ft/flat_car.mdl",vec(0,0,22),ang(0,0.1,0.1),"submat",array(4,"models/props_c17/metalladder002",9,"models/props_pipes/pipeset_metal")),
+            table(1,"models/props_metaladon/parts/tanker_bell_1.mdl",vec(0,-93.2,14.4),ang(-45,0,90),"material","models/props_c17/metalladder002"),
+            table(-1,"models/joe/bogies/2ft_2.mdl",vec(0,-98.4,-3),ang(0,-0.1,0),"axcom",array(1,vec(0,0,1)),"submat",array(7,"models/proppertextures/metal_shiny")),
+            table(-1,"models/joe/bogies/2ft_2.mdl",vec(0,98.8,-3),ang(0,-178.6,-0.2),"axcom",array(1,vec(0,0,1)),"submat",array(7,"models/proppertextures/metal_shiny")),
+            table(1,"models/props_c17/oildrum001.mdl",vec(0,89.9,39.4),ang(90,-90,0),"scale",vec(2.5,2.5,4)),
+            table(1,"models/props_metaladon/parts/tanker_bell_2.mdl",vec(0,-9.6,74.8),ang(0,-90,0),"material","models/props_c17/metalladder002")
+        )
+
+
+
+
+        
+    )
+    
+    NxPs = MDL:count()+1
+    Prc = Process = AddPhase = HowMany = 1
+    
+    #Functions
+    
+    function number metaparent(Ent:entity){ #Finds the "deepest level" parent, and returns how many steps it took to get there.
+        
+        P = Ent
+        L = 0
+        
+        while(1){
+            
+            if(P:parent():isValid()){
+                
+               P = P:parent()
+               L++
+            
+            }else{
+            
+                return L
+                
+            }
+            
+        }
+        
+    }
+    
+    function number decode(M:string,T:string){ #Turns roadnames and roadnumbers into bodygroup combinations for the Reportingmark and Number props.
+        
+        if(M == "rn"){
+            
+            switch(T:lower()){
+                
+                case "a" , return 0 break
+                case "b" , return 1 break
+                case "c" , return 2 break
+                case "d" , return 3 break
+                case "e" , return 4 break
+                case "f" , return 5 break
+                case "g" , return 6 break
+                case "h" , return 7 break
+                case "i" , return 8 break
+                case "j" , return 9 break
+                case "k" , return 10 break
+                case "l" , return 11 break
+                case "m" , return 12 break
+                case "n" , return 13 break
+                case "o" , return 14 break
+                case "p" , return 15 break
+                case "q" , return 16 break
+                case "r" , return 17 break
+                case "s" , return 18 break
+                case "t" , return 19 break
+                case "u" , return 20 break
+                case "v" , return 21 break
+                case "w" , return 22 break
+                case "x" , return 23 break
+                case "y" , return 24 break
+                case "z" , return 25 break
+                case " " , return 26 break
+                default, print("Invalid char decoded!?") return 26 break
+                    
+            }
+            
+        }elseif(M == "num"){
+            
+            switch(T:lower()){
+                
+                case "0" , return 0 break
+                case "1" , return 1 break
+                case "2" , return 2 break
+                case "3" , return 3 break
+                case "4" , return 4 break
+                case "5" , return 5 break
+                case "6" , return 6 break
+                case "7" , return 7 break
+                case "8" , return 8 break
+                case "9" , return 9 break
+                case " " , return 10 break
+                default, print("Invalid char decoded!?") return 10 break
+                    
+            }
+            
+        }
+        
+    }
+    
+    function string center(S:string,N){ #Centers text strings with spaces for use with Reporting Marks
+        
+        SO = ""
+        
+        if(S:length() >= N){
+            
+            return S
+            
+        }else{
+            
+            for(X = 1,floor((N-S:length())/2)){
+            
+                SO = SO + " " 
+                
+            }
+            
+            SO = SO + S
+            
+            for(X = 1,floor((N-S:length())/2)){
+            
+                SO = SO + " " 
+                
+            }
+            
+            if(S:length() % 2 != N % 2){
+                
+                if(randint(0,1) == 1){
+                    
+                    SO = SO + " "
+                    
+                }else{
+                    
+                    SO = " " + SO
+                    
+                }
+                
+            }
+
+            return SO
+            
+        }
+        
+    }
+    
+    function string road(S:string){#Generates a random road, else returns the road inputted
+        
+        if(S == "****"){
+                
+            So = ""
+            So = So + select(randint(1,26),"a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w"," "," "," ")
+            So = So + select(randint(1,26),"a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z")
+            So = So + select(randint(1,26),"a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z")
+            So = So + select(randint(1,50),"a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z",
+            "x","x","x","x","x","x","x","x","x","x","x","x","x","x","x","x","x","x","x","x","x","x","x","x",
+            " "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," ")
+            
+            return So
+            
+        }else{
+            
+            return S
+            
+        }
+        
+    }
+            
+    
+    function number railhead(Ent:string){	#Function for telling how far off the railhead the orgin should be
+        	
+        if(Ent == "models/magtrains/trucks/barber_s2_phx.mdl" | Ent == "models/magtrains/trucks/barber_s2_rsg.mdl"){	
+        	
+            return 26	
+            
+        }elseif(Ent == "models/joe/bogies/2ft_2.mdl"){
+            
+            return -4
+            
+        }elseif(Ent == "models/akandr/russian/bogie/cnii_hz_5ft.mdl"){
+            
+            return 34
+            	
+        }else{	
+        	
+            print("No offset defined for this bogie!")	
+            return 0
+            	
+        }	
+        	
+    }
+    
+    function number progress(N,Y){ #Weighting system for cars and eras. I should rework this!
+        
+        if(N){
+            
+            return ((0.6 - (Y/120)*0.4)*Y)+Y
+            
+        }else{
+        
+            return (0.6 - (Y/120)*0.4)*Y
+            
+        }
+        
+    }
+    
+    function number weight(Vec:vector,N){ #Replaces the above function with a better version                         
+        
+        return (Vec:x()/(0.5 + Vec:z()/(110/0.3)))-(Vec:x()*(1-N))
+        
+    }
+    
+    function incrSID(){ #Function that increments the sound ID and rolls it over for re-using ID's
+        
+        SID = (SID+1)%15
+        
+    }
+        
+        
+    function vector randtoRGB(Base:vector,Shade:vector){ #Random RGB from 2 HSL inputs.
+        
+        local Hue = mod(random(Base:x(),Shade:x()),360)
+        local Sat = clamp(Base:y()+random(Shade:y(),-Shade:y()),0,1)
+        local Light = clamp(Base:z()+random(Shade:z(),-Shade:z()),0,1)
+        
+        local Chr = (1 - abs(2 * Light - 1)) * Sat
+        local H = Hue/60
+        local MID =(1 - abs(H % 2 - 1)) * Chr
+        
+        if(H < 1){
+            R = Chr
+            G = MID
+            B = 0
+        }elseif(H < 2){
+            R = MID
+            G = Chr
+            B = 0
+        }elseif(H < 3){
+            R = 0
+            G = Chr
+            B = MID
+        }elseif(H < 4){
+            R = 0
+            G = MID
+            B = Chr
+        }elseif(H < 5){
+            R = MID
+            G = 0
+            B = Chr
+        }elseif(H < 6){
+            R = Chr
+            G = 0
+            B = MID
+        }else{
+            R = 255 
+            G = 255
+            B = 255
+        }
+        
+        local M = Light - Chr/2
+        return vec(R+M,G+M,B+M)*255
+    
+    }
+    
+    function vector toRGB(HSL:vector){ #HSL input to RGB output
+        
+        local Hue = HSL:x()
+        local Sat = HSL:y()
+        local Light = HSL:z()
+        
+        local Chr = (1 - abs(2 * Light - 1)) * Sat
+        local H = Hue/60
+        local MID =(1 - abs(H % 2 - 1)) * Chr
+        
+        if(H < 1){
+            R = Chr
+            G = MID
+            B = 0
+        }elseif(H < 2){
+            R = MID
+            G = Chr
+            B = 0
+        }elseif(H < 3){
+            R = 0
+            G = Chr
+            B = MID
+        }elseif(H < 4){
+            R = 0
+            G = MID
+            B = Chr
+        }elseif(H < 5){
+            R = MID
+            G = 0
+            B = Chr
+        }elseif(H < 6){
+            R = Chr
+            G = 0
+            B = MID
+        }else{
+            R = 100
+            G = 255
+            B = 255
+        }
+        
+        local M = Light - Chr/2
+        return vec(R+M,G+M,B+M)*255
+    
+    }
+    
+    function number auto_mult(N,S:string){ #Multiply the value by whatever tags have multipliers on them
+        
+        for(X = 1,Multipliers:count()/2){	
+            	
+            if(S:find(Multipliers[X*2-1,string])){	
+                	
+                N = N*Multipliers[X*2,number]	
+                	
+            }
+            
+        }
+            
+        return N
+        
+    }
+    
+    function array parse(P:array){ #Turn Color arrays into pick-able arrays
+        
+        if(!P:count()){
+            
+            return array(0)
+            
+        }else{
+        
+            local O = array()
+            
+            for(X = 1, P:count()){
+                
+                for(Y = 1, P[X,number]){
+                     
+                    O = O:add(array(X))
+                    
+                }
+                
+            }
+            
+            return O
+            
+        }
+        
+    }
+    
+    function number metacount(T:table){ #Recursively count table entries
+        
+        local O = 0
+        
+        for(X = 1, 10){
+            
+            O = O + T[toString(X),array]:count()
+            
+        }
+        
+        return O
+        
+    }
+    
+    function string list(T:table){ #Outputs every entry in a table recursively.
+        
+        local O = ""
+        
+        for(X = 1, 10){
+            
+            for(Y = 1, T[toString(X),array]:count()){
+            
+                O = O + T[toString(X),array][Y,string] + " "
+                
+            }
+            
+        }
+        
+        return O:trim()
+        
+    }
+    
+    #Misc Variable Priming
+        
+    E = entity()
+    
+    E:constraintBreak()
+    E:propPhysicalMaterial("friction_00")
+    
+    E:setMaterial("")
+    E:setAlpha(255)
+    
+    for(X = 1, 32){
+        
+        E:setSubMaterial(X,"")
+        
+    }
+    
+    Quota = 500
+    INCR = 90/4
+    
+    X = Y = Z = Part = Attr = N = D = 1
+    
+    HOLID = 2
+    NewPos = 1 #Priming for checking position
+    CarCount = 1
+    
+    HideChat = 1
+    
+    Pool = array(0)
+    PoolTrack = ""
+    SvData = table()
+    
+        
+    #Variables for debugging purposes
+    
+    DELT = 1 #If 0, all cars have the same chance to spawn
+    FUNC = 1 #If 1, the "functional" tag is automatically added to searches
+    DEBU = DD = 0 #If 1, one of every type of car in a search will be spawned
+    
+    TQ = TQ/2 #PT2 sees everything as double-weight, use this to negate it.
+    
+    Version = "1.0"
+    
+    TxClr = vec2(0.8,0.7)
+    Spd = 6
+    
+    #Holograms and Coloration of the e2
+    
+    HUEEE = random(0,359)
+    
+    if(E:model() == "models/magtrains/trucks/barber_s2_phx.mdl" | E:model() == "models/magtrains/trucks/barber_s2_rsg.mdl"){
+        
+        holoCreate(0,E:toWorld(vec(0,70,-7)),vec(1,1,1.5)*2.5,E:toWorld(ang(0,0,-90)),vec(0,0,0),"cone")
+        holoParent(0,E)
+        
+    }elseif(E:model() == "models/joe/bogies/2ft_2.mdl"){
+        
+        holoCreate(0,E:toWorld(vec(0,38,12)),vec(1,1,1.5)*1.25,E:toWorld(ang(0,0,-90)),vec(0,0,0),"cone")
+        holoParent(0,E)
+        
+    }elseif(E:model() == "models/akandr/russian/bogie/cnii_hz_5ft.mdl"){
+        
+        holoCreate(0,E:toWorld(vec(-68,0,-16)),vec(1,1,1.5)*2.5,E:toWorld(ang(0,90,-90)),vec(0,0,0),"cone")
+        holoParent(0,E)
+        ModeRot = 90
+        
+    }else{
+        
+        printColor(toRGB(vec(HUEEE,TxClr:x(),TxClr:y())),"[CCC] Incorrect bogie model! Please change the @model of the E2 to a valid option.")
+        InvalidBogie = 1
+         
+    }
+    
+    holoMaterial(0,"debug/debugdrawflat")
+    holoColor(0,toRGB(vec(HUEEE,0.5,0.5)))
+    HUEEE = (HUEEE + Spd)%360
+    
+    holoPos(1,E:pos())
+    holoParent(1,E) 
+    holoAlpha(1,0)
+    holoShadow(1,0)
+    holoModel(1,"cube")
+    
+    setName("Convenient Classic Carspawner V"+Version+"\nMade by Sir Metaladon")
+    printColor(toRGB(vec(HUEEE,TxClr:x(),TxClr:y())),"[CCC] Welcome to the Convenient, Classic Carspawner V"+Version+" Type .help for a how-to.")
+    runOnChat(1)
+    
+    Print = Print:add(array("Initialized the built-in car pack, adding "+MDL:count()+" cars."))
+    
+    #[
+    if(E:model() == "models/magtrains/trucks/barber_s2_rsg.mdl"){
+        
+        Mode = 2
+        
+    }elseif(E:model() != "models/magtrains/trucks/barber_s2_phx.mdl"){
+        
+        printColor(toRGB(vec(HUEEE,TxClr:x(),TxClr:y())),"[CCC] @model line is set incorrectly! Please refer to the top of the E2 for instructions on what to do.")
+        holoEntity(1):soundPlay(0,0,"buttons/combine_button_locked.wav")
+        E:soundPlay(1,0,"vo/engineer_helpme03.mp3")
+        timer("getout",2500)
+        
+    }
+    
+    Bogie = select(Mode+1,"models/magtrains/freightbogey2.mdl","models/magtrains/trucks/barber_s2_phx.mdl","models/magtrains/trucks/barber_s2_rsg.mdl") #Temporary
+    Up = 20 #How high the center of the car is off the ground by default
+    
+    if(Mode == 1 | Mode == 2){
+        
+        US = -17
+        Up = 19
+        
+    }]#
+    
+    E:propFreeze(0)
+    timer("freeze",500)
+    E:setPos(E:pos()+vec(0,0,5))
+    
+    #Version Checker
+    
+    runOnHTTP(1)
+    timer("timeout",3500)
+    httpRequest("https://raw.githubusercontent.com/SirMetaladon/convenient-classic-carspawner/master/versions.txt")
+    
+    #[Preset stuff in MDL
+    
+    while(N <= MDL:count() & minquota() > Quota){
+        
+        chew(N)
+        N++
+        
+    }]#
+    
+}
+
+interval(100) #Standard Interval
+
+if(clk("freeze")){
+    
+    E:propFreeze(1)
+    
+}
+
+if(clk("getout")){
+    
+    holoDeleteAll()
+    stoptimer("timeout")
+    stoptimer("freeze")
+    stoptimer("interval")
+    exit()
+    
+}
+
+noCollideAll(E,E:isFrozen())
+
+if(httpClk()){ #HTTP Update Request
+    
+    Data = httpData():explode("|")[1,string]:trim()
+    
+    if(Data == Version){
+        
+        Print = Print:add(array("You're up to date!"))
+        
+    }elseif(Version:toNumber() < Data:toNumber()){
+        
+        Print = Print:add(array("Outdated version detected! Do .updates to get the link."))
+        holoEntity(1):soundPlay(0,0,"buttons/combine_button_locked.wav")
+        holoEntity(0):soundPlay(1,0,"vo/engineer_moveup01.mp3")
+        
+    }elseif(Version:toNumber() > Data:toNumber()){
+        
+        Print = Print:add(array("This is a developer version. Do not distribute."))
+        
+    }
+    
+    stoptimer("timeout")
+    
+}
+
+if(clk("timeout")){ #If time out, play sound
+    
+    Print = Print:add(array("Could not retrieve version number. Refresh the E2 to check again!"))
+    holoEntity(1):soundPlay(0,0,"vo/engineer_negativevocalization01.mp3",0)
+    
+}
+
+if(clk() & minquota() > Quota){ #If fired by interval (where the hard work and printing happens)
+
+    if(Print:count() & playerCanPrint()){ #Printer Module
+        
+        if(Print[1,string] != ""){
+            
+            printColor(toRGB(vec(HUEEE,TxClr:x(),TxClr:y())),"[CCC] "+Print[1,string])
+            
+        }elseif(Print[1,number]:toString() != ""){
+        
+            printColor(toRGB(vec(HUEEE,TxClr:x(),TxClr:y())),"[CCC] "+Print[1,number]:toString())
+            
+        }else{
+        
+            printColor(toRGB(vec(HUEEE,TxClr:x(),TxClr:y())),"[CCC] Incompatible print data type!")
+            
+        }
+        
+        Print:remove(1)
+        
+    }
+
+    E:setColor(toRGB(vec(HUEEE,0.5,0.5)))
+    holoColor(0,toRGB(vec(HUEEE,0.5,0.5)))
+    HUEEE = (HUEEE + Spd)%360
+    
+    if(AddPhase == 1 & perf()){
+        
+        Position = 1
+        print("all ye")
+        ##include "magspack2/includes/carspawner_packs/metaladons_custom_cars"
+        
+        
+        if(Process == Position){
+            
+            AddPhase = 2
+            
+        }
+        
+    }
+    
+    if(AddPhase == 2){
+        
+        while(N <= MDL:count() & minquota() > 1000){
+        
+            while(D <= MDL[N,table]:count()-1 & perf()){	#Replace color arrays with processed versions
+                	
+                for(T = 1, (MDL[N,table][D+1,table]:count()-4)/2){	
+                    	
+                    if(MDL[N,table][D+1,table][T*2+3,string] == "color"){	
+                        
+                        MDL[N,table][D+1,table][T*2+4,array] = parse(MDL[N,table][D+1,table][T*2+4,array])	
+                        
+                        	
+                    }	
+                    	
+                }
+                D++	
+                	
+            }
+            
+            if(D > MDL[N,table]:count()-1){
+                
+                if(!CarTypes:find(MDL[N,table][1,array][2,string]:explode(" ")[MDL[N,table][1,array][2,string]:explode(" "):count(),string])){
+                    
+                    CarTypes = CarTypes + MDL[N,table][1,array][2,string]:explode(" ")[MDL[N,table][1,array][2,string]:explode(" "):count(),string]
+                    TagAttributes[TagAttributes:count(),array][TagAttributes[TagAttributes:count(),array]:count()+1,string] = MDL[N,table][1,array][2,string]:explode(" ")[MDL[N,table][1,array][2,string]:explode(" "):count(),string] #Adds mdltype tag to TagAttributes
+                    
+                }
+                
+                if(D < 21){
+                    MDL[N,table][1,array][2,string] = MDL[N,table][1,array][2,string] + " cheap"
+                }elseif(D < 41){
+                    MDL[N,table][1,array][2,string] = MDL[N,table][1,array][2,string] + " average"
+                }elseif(D < 61){
+                    MDL[N,table][1,array][2,string] = MDL[N,table][1,array][2,string] + " expensive"
+                }elseif(D < 101){
+                    MDL[N,table][1,array][2,string] = MDL[N,table][1,array][2,string] + " excessive"
+                }else{
+                    MDL[N,table][1,array][2,string] = MDL[N,table][1,array][2,string] + " absurd"
+                }
+            
+                MDL[N,table][1,array][2,string] = MDL[N,table][1,array][2,string] + " nodef mdltag anytime anyone anykind anysuspension anydetail anytype anywhere anypack anycost anyroad anyconnection " + MDL[N,table][1,array][5,string]  #Adds "all" tags plus utility tags.
+                
+                if(!MDL[N,table][1,array][2,string]:find("janky")){ #If not janky, add functional.
+                    
+                   MDL[N,table][1,array][2,string] = MDL[N,table][1,array][2,string] + " functional" 
+                    
+                }
+                
+                if(!Roads:find(MDL[N,table][1,array][5,string])){
+                    
+                    Roads = Roads + MDL[N,table][1,array][5,string]
+                    TagAttributes[TagAttributes:count()-1,array][TagAttributes[TagAttributes:count()-1,array]:count()+1,string] = MDL[N,table][1,array][5,string]
+                    
+                }
+                
+                MDL[N,table][1,array][1,number] = auto_mult(MDL[N,table][1,array][1,number],MDL[N,table][1,array][2,string]) #Automatically multiplies spawning rates by tag-based multipliers
+                
+                
+                
+                D = 1
+                N++
+                
+            }
+            
+        }
+        
+        if(N > MDL:count()){
+            
+            Print = Print:add(array("Ready for spawning, with access to "+(N-1)+" cars."))
+            AddPhase = 0
+            
+        }
+        
+    }   
+    
+}
+
+if(chatClk(owner()) & !AddPhase){#Chat commands section
+    
+    LSC = owner():lastSaid():trim():lower()
+
+    if((LSC:explode(" ")[1,string] == "!sp" | LSC:explode(" ")[1,string] == ".sp")){
+        
+        hideChat(HideChat)
+        
+        holoEntity(1):soundPlay(2,100,"ambient/computer_working2.wav",0)
+        soundPitch(2,250)
+        owner():soundPlay(3,100,"buttons/blip2.wav",0)
+        soundVolume(3,0.3)
+        
+        if(LSC:explode(" ")[2,string]:toNumber() != 0){
+            
+            Print = Print:add(array("Command recieved! Queuing " + LSC:explode(" ")[2,string]:toNumber() + " cars."))
+            LS = LS:add(array(owner():lastSaid():trim():lower()))
+            
+        }elseif(LSC:explode(" ")[2,string]:sub(0,LSC:explode(" ")[2,string]:length()-2):toNumber() != 0 & LSC:explode(" ")[2,string]:sub(LSC:explode(" ")[2,string]:length()-1,LSC:explode(" ")[2,string]:length()) == "ft"){
+        
+            Print = Print:add(array("Command recieved! Queuing " + LSC:explode(" ")[2,string]:sub(0,LSC:explode(" ")[2,string]:length()-2):toNumber() + " feet of cars."))
+            LS = LS:add(array(owner():lastSaid():trim():lower()))
+            
+        }elseif(LSC:explode(" ")[2,string]:sub(0,LSC:explode(" ")[2,string]:length()-1):toNumber() != 0 & LSC:explode(" ")[2,string]:sub(LSC:explode(" ")[2,string]:length(),LSC:explode(" ")[2,string]:length()) == "t"){
+        
+            Print = Print:add(array("Command recieved! Queuing " + LSC:explode(" ")[2,string]:sub(0,LSC:explode(" ")[2,string]:length()-1):toNumber() + " tons worth of cars."))
+            LS = LS:add(array(owner():lastSaid():trim():lower()))
+            
+        }else{
+            
+            soundStop(2)
+            soundStop(3)
+            owner():soundPlay(2,100,"buttons/button11.wav",0)
+            soundVolume(2,0.3)
+            Print = Print:add(array("Incorrect syntax! Do .sp [number of cars] [tag] [tag] etc..."))
+            
+        }
+        
+    }elseif(LSC:explode(" ")[1,string] == ".rem" | LSC:explode(" ")[1,string] == "!rem"){
+        
+        hideChat(HideChat)
+        
+        owner():soundPlay(4,100,"buttons/button19.wav",0)
+        soundVolume(4,0.3)
+        
+        if(LSC:explode(" ")[2,string]:toNumber() != 0){
+            
+            Print = Print:add(array("Command recieved! Queuing " + LSC:explode(" ")[2,string]:toNumber() + " car removals."))
+            LS = LS:add(array(owner():lastSaid():trim():lower()))
+            
+        }elseif(LSC:explode(" ")[2,string]:sub(0,LSC:explode(" ")[2,string]:length()-2):toNumber() != 0 & LSC:explode(" ")[2,string]:sub(LSC:explode(" ")[2,string]:length()-1,LSC:explode(" ")[2,string]:length()) == "ft"){
+        
+            Print = Print:add(array("Command recieved! Queuing " + LSC:explode(" ")[2,string]:sub(0,LSC:explode(" ")[2,string]:length()-2):toNumber() + " feet of removals."))
+            LS = LS:add(array(owner():lastSaid():trim():lower()))
+            
+        }elseif(LSC:explode(" ")[2,string]:sub(0,LSC:explode(" ")[2,string]:length()-1):toNumber() != 0 & LSC:explode(" ")[2,string]:sub(LSC:explode(" ")[2,string]:length(),LSC:explode(" ")[2,string]:length()) == "t"){
+        
+            Print = Print:add(array("Command recieved! Queuing " + LSC:explode(" ")[2,string]:sub(0,LSC:explode(" ")[2,string]:length()-1):toNumber() + " tons of removals."))
+            LS = LS:add(array(owner():lastSaid():trim():lower()))
+        
+        }else{
+            
+            soundStop(4)
+            owner():soundPlay(2,100,"buttons/button11.wav",0)
+            soundVolume(2,0.3)
+            Print = Print:add(array("Incorrect syntax! Do .rem [number of cars]"))
+            
+        }
+    
+    }elseif(LSC:explode(" ")[1,string] == ".help" | LSC:explode(" ")[1,string] == "!help"){
+        
+        Print = Print:add(array("Welcome to the help section! Here's some how-to's and help.\n"+
+        "Do \".howto use\" for basic commands and spawning procedures.\n"+
+        "Do \".howto adv\" for the advanced usage and some notable quirks\n"+
+        "Do \".howto loads\" for how to get specific loads and types of cars.\n"+
+        "Do \".commandlist\" for a full list of commands. Highly reccomended!\n"+
+        "Do \".faq\" for frequently asked questions on the E2 and other functions.\n"+
+        "Do \".contact\" for my profile to ask questions and give feedback.\n"+
+        "Do \".addons\" for the addon pack containing the models used in this E2."))
+        owner():soundPlay(3,100,"buttons/bell1.wav",0)
+        soundVolume(3,0.2)
+        hideChat(HideChat)
+        
+    }elseif((LSC:explode(" ")[1,string] == ".howto" | LSC:explode(" ")[1,string] == "!howto") & LSC:explode(" ")[2,string] == "use"){
+        
+        Print = Print:add(array("Here's how to create cars with this spawer:\n"+
+        "Type \".sp\", then number of cars, then tags like \"boxcar\" or \"50s\".\n"+
+        "It will find cars that match the default tags + tags you specified.\n"+
+        "Example: \".sp 2 cem 90s\" spawns 2 cement hoppers from the 90s.\n"+
+        "The default era was \"80s\", but \"90s\" tag overwrote the era tag.\n"+
+        "Do \".rem [# of cars]\" to undo cars. \".rem 3\" will remove 3 cars.\n"+
+        "You can use length and tonnage to add/remove, by adding \"ft\" or \"t\".\n"+
+        "Example: \".sp 400t box\" adds 400 tons of boxcars, \".rem 200ft\" removes 200ft of cars."))
+        owner():soundPlay(3,100,"buttons/bell1.wav",0)
+        soundVolume(3,0.2)
+        hideChat(HideChat)
+        
+    }elseif((LSC:explode(" ")[1,string] == ".howto" | LSC:explode(" ")[1,string] == "!howto") & LSC:explode(" ")[2,string] == "adv"){
+        
+        Print = Print:add(array("Some advanced features to know about the system:\n"+
+        "Using \",\" separates tags into blocks, evaluated individually.\n"+
+        "Example: \".sp 5 box 60s, tank 40s\" selects 60's boxcars and 40's tankers,\n"+
+        "but NOT 40's boxcars or 60's tankers. It allows more fine control over tags.\n"+
+        "Here's how selecting cars  with tags in this E2 works:\n"+
+        "Cars has tags that describe them, like \"flatcar\" or \"gsgrove\". Tags are divided into catergories of exclusivity, like era and type. Do \".tags\" for tag types. If no tags in a catergory are applied, it will apply a \"default tag\". Do \".default\" to see default tags."))
+        Print = Print:add(array("There's also some special tags: Adding \"nodef\" removes default tags from the search. Good for expanding the scope of your search."))
+        Print = Print:add(array("\"mdltag\" enables searching the \"ends\" (everything after the last /) of car model names as well as normal tags. Good for finding specific cars."))
+        Print = Print:add(array("\"janky\" allows easily derailed cars to be spawned. They're not as usuable, but they still exist. Highly reccomended for \"preera\" and \"10s\" eras."))
+        owner():soundPlay(3,100,"buttons/bell1.wav",0)
+        soundVolume(3,0.2)
+        hideChat(HideChat)
+        
+    }elseif((LSC:explode(" ")[1,string] == ".howto" | LSC:explode(" ")[1,string] == "!howto") & LSC:explode(" ")[2,string] == "loads"){
+        
+        Print = Print:add(array("The way the carspawner handles loaded cars is tricky:\n"+
+        "If you do just \".sp 3 box\", it will spawn 3 randomly loaded boxcars.\n"+
+        "If you said \".sp 3 box loaded\", it will spawn only loaded boxcars.\n"+
+        "Wait a second! What if you wanted to spawn a loaded AND an unloaded cars?\n"+
+        "Doing \".sp 5 box loaded cem empty\" would create empty AND loaded versions of BOTH cars, which isn't what you want. You could do \".sp 5 box loaded, cem empty\", but that's kinda wonky. Try this:\n"+
+        "Instead of \"box\" or \"cem\", you can specify; \"general_boxcar_nonhigh_l\" and \"cement_hopper_e\". The _e or _l at the end denotes empty or loaded. Be warned, however! The spelling and grammar of these tags is very specific, so tags like \"boxcar_e\" won't work! Use .taglist to see all possible tags."))
+        owner():soundPlay(3,100,"buttons/bell1.wav",0)
+        soundVolume(3,0.2)
+        hideChat(HideChat)
+         
+    }elseif(LSC:explode(" ")[1,string] == ".addons" | LSC:explode(" ")[1,string] == "!addons"){
+        
+        Print = Print:add(array("Here's a link to the FC&N Server Collection\n"+
+        "It should contain the textures and models required.\n"+
+        "http://steamcommunity.com/sharedfiles/filedetails/?id=390798140\n"+
+        "Hit the Subscribe All button, and close Garry's Mod.\n"+
+        "Re-launch the game, let the addons download, then rejoin!"))
+        owner():soundPlay(3,100,"buttons/bell1.wav",0)
+        soundVolume(3,0.2)
+        hideChat(HideChat)
+        
+    }elseif(LSC:explode(" ")[1,string] == ".faq" | LSC:explode(" ")[1,string] == "!faq"){
+        
+        Print = Print:add(array("Here's some common questions answered: \n"+
+        "Q: Can it spawn RSG? A: Yes! There's a setting at the top of the e2.\n"+
+        "Q: Can it spawn 2ft? A: Not yet. Coming in a future overhaul!\n"+
+        "Q: Can it spawn passenger/locomotives/other? A: No. Future stuff!\n"+
+        "Q: Can it spawn holograms? A: A system is in the works for exactly that!"))
+        owner():soundPlay(3,100,"buttons/bell1.wav",0)
+        soundVolume(3,0.2)
+        hideChat(HideChat)
+        
+    }elseif(LSC:explode(" ")[1,string] == ".contact" | LSC:explode(" ")[1,string] == "!contact"){
+        
+        Print = Print:add(array("Want to contact me? Report a bug? Got feedback? Here you go!\n"+
+        "https://steamcommunity.com/profiles/76561198077247660/\n"+
+        "Discord: Sir Metaladon#1539"))
+        owner():soundPlay(3,100,"buttons/bell1.wav",0)
+        soundVolume(3,0.2)
+        hideChat(HideChat)
+        
+    }elseif(LSC:explode(" ")[1,string] == ".tags" | LSC:explode(" ")[1,string] == "!tags"){
+        
+        Print = Print:add(array("Tags are separated into groups based on exclusivity:\n"+
+        "The 1st group is Car Type, like boxcar or tanker.\n"+
+        "The 2nd group is Era, like modern, 30s, or preera (civil war).\n"+
+        "The 3rd group is Modeler, like gsgrove or metaladon.\n"+
+        "The 4th group is Suspension/bolsters, just old or new.\n"+
+        "The 5th group is Car Role, such as manifest, buffer, and mow.\n"+
+        "The 6th group is Stability. Some unstable cars are marked janky.\n"+
+        "The 7th group is Detail; ldetail, mdetail, and hdetail.\n"+
+        "The 8th group is Country, like usamerican and russian.\n"+
+        "The 9th group is Special, tags like nodef and mdltag.\n"+
+        "The 10th group is Load, just loaded or empty.\n"+
+        "The 11th group is Modelpath, use with mdltag tag.\n"+
+        "Do .taglist for a massive list of almost ALL possible tags."))
+        owner():soundPlay(3,100,"buttons/bell1.wav",0)
+        soundVolume(3,0.2)
+        hideChat(HideChat)
+        
+    }elseif(LSC:explode(" ")[1,string] == ".settings" | LSC:explode(" ")[1,string] == "!settings"){
+    
+        Print = Print:add(array("Here's a section explaining your current settings:\n"+
+        "Mode is currently "+Mode+", so bogie type is "+select((Mode == 1 | Mode == 2)+1,"Old Style","New Style")+" "+select((Mode != 2)+1,"RSG","PHX")+".\n"+
+        "TQ is currently "+TQ+", so average loaded car weight is "+TQ*100+" tons.\n"+
+        "LC is currently "+LC+", so chance to be loaded is a "+round(LC*100)+"% chance."))
+        owner():soundPlay(3,100,"buttons/bell1.wav",0)
+        soundVolume(3,0.2)
+        hideChat(HideChat)
+        
+    }elseif(LSC:explode(" ")[1,string] == ".taglist" | LSC:explode(" ")[1,string] == "!taglist"){
+    
+        Taglist = 1
+        Print = Print:add(array("Here goes!"))
+        owner():soundPlay(3,100,"buttons/bell1.wav",0)
+        soundVolume(3,0.2)
+        hideChat(HideChat)
+        
+    }elseif(LSC:explode(" ")[1,string] == ".default" | LSC:explode(" ")[1,string] == "!default"){
+    
+        if(TagDefaults:count() == 0){
+            
+            Print = Print:add(array("There are no default tags currently."))
+            
+        }else{
+        
+            Print = Print:add(array("Here's the default tags."))
+            
+            for(X = 1, TagDefaults:count()){
+                
+                Print = Print:add(TagDefaults[X,array])
+                
+            }
+            
+        }
+        hideChat(HideChat)
+          
+    }elseif(LSC:explode(" ")[1,string] == ".restart" | LSC:explode(" ")[1,string] == "!restart"){
+        
+        X = Y = Z = Part = Attr = 1
+        CTS = WTS = LTS = WTR = LTR = CTR = Phase = Spacer = 0
+        Pool = array(0)
+        PoolTrack = ""
+        Tags = table()
+        NewPos = 1
+        Print = Print:add(array("Reset everything. Feel free to move the spawner!"))
+        LS = array()
+        owner():soundPlay(3,100,"buttons/bell1.wav",0)
+        soundVolume(3,0.2)
+        hideChat(HideChat)
+        
+    }elseif(LSC:explode(" ")[1,string] == ".rerender" | LSC:explode(" ")[1,string] == "!rerender"){
+        
+        Rerender = 1
+        Print = Print:add(array("Deleting and re-creating holograms..."))
+        owner():soundPlay(3,100,"buttons/bell1.wav",0)
+        soundVolume(3,0.2)
+        hideChat(HideChat)
+        
+    }elseif(LSC:explode(" ")[1,string] == ".delete" | LSC:explode(" ")[1,string] == "!delete"){
+        
+        printColor(toRGB(vec(HUEEE,TxClr:x(),TxClr:y())),"[CCC] "+"Deleting the carspawner E2... Good luck on your travels!")
+        hideChat(HideChat)
+        selfDestruct()
+        
+    }elseif(LSC:explode(" ")[1,string] == ".nuke" | LSC:explode(" ")[1,string] == "!nuke"){
+        
+        printColor(toRGB(vec(HUEEE,TxClr:x(),TxClr:y())),"[CCC] "+"Nuking the consist and carspawner E2 from orbit. Just to be sure!")
+        hideChat(HideChat)
+        propDeleteAll()
+        selfDestructAll()
+        
+    }elseif(LSC:explode(" ")[1,string] == ".stats" | LSC:explode(" ")[1,string] == "!stats"){
+        
+        Print = Print:add(array("Here's the stats for the currently spawned cars:"))
+        Print = Print:add(array(PropCount + " props, " + HoloCount + " holos in " + Spawned:count() + " cars, " + round(TotalTrainLength/12) + " feet + " + Spacer + " feet of spacer, " + round(TotalTrainWeight/907) + " tons weight."))
+        owner():soundPlay(3,100,"buttons/bell1.wav",0)
+        soundVolume(3,0.2)
+        hideChat(HideChat)
+        
+    }elseif(LSC:explode(" ")[1,string] == ".commandlist" | LSC:explode(" ")[1,string] == "!commandlist"){
+        
+        Print = Print:add(array("A full list of commands:\n"+
+        ".sp [number of cars/tons/feet] [tag] [tag] etc (Spawns cars. Add a t at the end of the first number for tons, and ft for feet. Add a , to specify multiple sets of tags that would normally conflict)\n"+
+        ".rem [number of cars/tons/feet] (Removes cars. Add a t at the end of the number for tons, and ft for feet.)\n"+
+        ".space [number of feet] (Adds phantom space on the end of the train for use as a gap for mid-train helpers. 0 resets the spacer.)\n"+
+        ".addons (Links to FC&N Workshop collection.)\n"+
+        ".settings (Explains the current E2 settings.)\n"+
+        ".contact (Shows Steam and Discord contact info.)\n"+
+        ".howto use (Shows the basics on how to use the E2)\n"+
+        ".howto adv (Shows adv usage and tips.)\n"+
+        ".faq (Frequently Asked Questions about the E2 and it's capabilities.)\n"+
+        ".updates (Links to the Github for updates and other versions.)\n"+
+        ".restart (Resets the E2 for making a new train.)\n"+
+        ".tags (Prints the types of tags.)\n"+
+        ".default (Prints the default tags.)\n"+
+        ".taglist (Prints literally all of the tags. (except model tags))\n"+
+        ".stats (Gives the number of cars, train length, and overall weight.)\n"+
+        ".delete (Deletes the E2, but not the train.)\n"+
+        ".nuke (Deletes the E2 AND the train.)\n"+
+        ".kill (Stops the spawning/deleting procedure.)\n"+
+        ".commandlist (You know what it does.)"))
+        owner():soundPlay(3,100,"buttons/bell1.wav",0)
+        soundVolume(3,0.2)
+        hideChat(HideChat)
+        
+    }elseif(LSC:explode(" ")[1,string] == ".updates" | LSC:explode(" ")[1,string] == "!updates"){
+        
+        Print = Print:add(array("Here's how to get the latest version:\n"
+        +"Go to the github, go to latest_version folder, then click on the file convenient_classic_carspawner X.XXX. Select the RAW option.\n"
+        +"Rightclick, select Save As, then download the file as the normal name.\n"
+        +"Move the file to your Steam directory, in this spot: steamapps/common/garrysmod/garrysmod/data/expression2\n"
+        +"Hit Refresh on the E2 sidebar ingame.\n"
+        +"https://github.com/SirMetaladon/convenient-classic-carspawner/tree/master/latest-version"))
+        owner():soundPlay(3,100,"buttons/bell1.wav",0)
+        soundVolume(3,0.2)
+        hideChat(HideChat)
+        
+    }elseif(LSC:explode(" ")[1,string] == ".space" | LSC:explode(" ")[1,string] == "!space"){
+        
+        if(LSC:explode(" ")[2,string]:toNumber() != 0){
+            
+            Print = Print:add(array("Added " + LSC:explode(" ")[2,string]:toNumber() + " feet of mid-helper spacer to the end of the train."))
+            Spacer = clamp(Spacer + LSC:explode(" ")[2,string]:toNumber(),0,9^9^9)
+            
+        }else{
+            
+            Print = Print:add(array("Reset the spacer from " + Spacer + " feet to 0."))
+            Spacer = 0
+            
+        } 
+        owner():soundPlay(3,100,"buttons/lever2.wav",0)
+        soundVolume(3,0.2)
+        hideChat(HideChat)
+        
+    }elseif(LSC:explode(" ")[1,string] == ".kill" | LSC:explode(" ")[1,string] == "!kill"){
+        
+        Print = Print:add(array("Killed the process!"))
+        X = Y = Z = Part = Attr = 1
+        CTS = WTS = LTS = WTR = LTR = CTR = Phase = 0
+        Pool = array(0)
+        PoolTrack = ""
+        Tags = table()
+        LS = array()
+        hideChat(HideChat)
+        owner():soundPlay(3,100,"buttons/lever4.wav",0)
+        soundVolume(3,0.2)
+        
+    }
+    
+}
+
+if(Taglist & perf() & !AddPhase){ #Separate printing section for Tag Listing command.
+    
+    while(X <= TagAttributes:count()-1 & perf()){
+        
+        while(Y <= TagAttributes[X,array]:count() & perf()){
+            
+            if((Str+" | "+TagAttributes[X,array][Y,string]):length() < 230){
+                
+                Str = Str +" | "+ TagAttributes[X,array][Y,string]
+                Y++
+                
+            }else{
+                
+                Str + Str + "\n"
+                Str2 = Str2 + Str
+                Str = ""
+                
+            }
+            
+        }
+        
+        if(Y > TagAttributes[X,array]:count()){
+            
+            Print = Print:add(array("Group "+X + ":" + Str2+Str))
+            Str = ""
+            Str2 = ""
+            X++
+            Y = 1
+            
+        }
+        
+    }
+    
+    if(X > TagAttributes:count()-1){
+        
+        X = 1
+        Print = Print:add(array("Told you there's be a lot of them...."))
+        Taglist = 0
+        
+    }
+    
+}
+
+if(Rerender & perf() & !AddPhase){ #Separate printing section for re-rendering command.
+    
+    while(X <= Spawned:count() & perf()){
+            
+        while(Y <= Spawned[X,table]:count()-1 & perf()){
+            
+            if(metaparent(Spawned[X,table][Spawned[X,table]:count()+1-Y,table][1,entity]) & Spawned[X,table][Spawned[X,table]:count()+1-Y,table][3,number] == 2){
+                
+                holoDelete(holoIndex(Spawned[X,table][Spawned[X,table]:count()+1-Y,table][1,entity]))
+                
+            }
+            Y++
+            
+        }
+        
+        if(Y > Spawned[X,table]:count()-1){
+            
+            while(Z <= Spawned[X,table]:count()-1 & perf() & holoCanCreate()){
+
+                P = Spawned[X,table][Spawned[X,table][Z+1,table][2,number]+1,table][1,entity]
+                
+                if(P:isValid() & Spawned[X,table][Z+1,table][3,number] == 2){
+                    
+                    Spawned[X,table][Z+1,table][1,entity] = holoCreate(HOLID,P:toWorld(Spawned[X,table][Z+1,table][5,vector]),
+                    Spawned[X,table][Z+1,table][10,vector],P:toWorld(Spawned[X,table][Z+1,table][6,angle]),
+                    Spawned[X,table][Z+1,table][7,vector],Spawned[X,table][Z+1,table][4,string])
+                    holoParent(HOLID,P)
+                    holoMaterial(HOLID,Spawned[X,table][Z+1,table][9,string])
+                    holoAlpha(HOLID,Spawned[X,table][Z+1,table][14,number])
+                    holoSkin(HOLID,Spawned[X,table][Z+1,table][15,number])
+                    
+                    for(Y = 1,Spawned[X,table][Z+1,table][11,array]:count()/2){
+                        
+                        holoEntity(HOLID):setSubMaterial(Spawned[X,table][Z+1,table][11,array][Y*2-1,number],Spawned[X,table][Z+1,table][11,array][Y*2,string])
+                        
+                    }
+                    
+                    for(Y = 1,Spawned[X,table][Z+1,table][12,array]:count()/2){
+                        
+                        holoEntity(HOLID):setBodygroup(Spawned[X,table][Z+1,table][12,array][Y*2-1,number],Spawned[X,table][Z+1,table][12,array][Y*2,number])
+                        
+                    }
+                    
+                    for(Y = 1,Spawned[X,table][Z+1,table][13,array]:count()/2){
+                        
+                        holoClipEnabled(HOLID,Y,1)
+                        holoClip(HOLID,Y,Spawned[X,table][Z+1,table][13,array][Y*2-1,vector],Spawned[X,table][Z+1,table][13,array][Y*2,vector],0)
+                        
+                    }
+                    
+                    #SvData = SvData:add(table(table(Ent,Prt[1,number],2,Prt[2,string],Prt[3,vector],Prt[4,angle],vec(255),0,"",vec(1),array(),array(),array(),255,0)))
+                    HOLID++
+                    
+                }
+                
+                Z++
+                
+            }
+        
+            if(Z > Spawned[X,table]:count()-1){
+                
+                Z = 1
+                Y = 1
+                X++
+                
+            }
+            
+        }
+        
+    }
+    
+    if(X > Spawned:count()){
+        
+        X = 1
+        Print = Print:add(array("Re-rendered "+HoloCount+" holograms on all spawned cars."))
+        Rerender = 0
+        
+    }
+    
+}
+    
+if((LS[1,string]:explode(" ")[1,string] == "!sp" | LS[1,string]:explode(" ")[1,string] == ".sp" | XO) & minquota() > Quota & !AddPhase){ #Begin .sp Command Processing
+    
+    if(!XO){ #If the process is in it's first iteration:
+        
+        if(LS[1,string]:explode(" ")[2,string]:toNumber() != 0){ #Determine count, tons, and feet.
+            
+            CTS = LS[1,string]:explode(" ")[2,string]:toNumber()
+            
+        }elseif(LS[1,string]:explode(" ")[2,string]:sub(LS[1,string]:explode(" ")[2,string]:length()-1,LS[1,string]:explode(" ")[2,string]:length()) == "ft"){
+        
+            LTS = LS[1,string]:explode(" ")[2,string]:sub(0,LS[1,string]:explode(" ")[2,string]:length()-2):toNumber()
+            
+        }elseif(LS[1,string]:explode(" ")[2,string]:sub(LS[1,string]:explode(" ")[2,string]:length(),LS[1,string]:explode(" ")[2,string]:length()) == "t"){
+        
+            WTS = LS[1,string]:explode(" ")[2,string]:sub(0,LS[1,string]:explode(" ")[2,string]:length()-1):toNumber()
+        
+        }
+        
+        DEBU = clamp(DEBU,0,DD)
+        E:propFreeze(1)
+        Pool = array(0)
+        PoolTrack = ""
+        Tags = table()
+        XO = X = Y = Z = Part = Attr = 1
+        LST = ""
+        Phase = 0
+        
+        for(X = 1, LS[1,string]:explode(" "):count()-2){ #Pair down the command to just the tags, no .sp or spawning value
+            
+           LST = LST +  " " + LS[1,string]:explode(" ")[X+2,string]
+        
+        }
+        
+        LS[1,string] = LST:trim()
+        
+    }
+        
+    
+    while(XO <= LS[1,string]:explode(","):count() & minquota() > Quota){ #After we've initialised the program, start working through the subdivisions
+        
+        if(!Phase){ #Initialise phase, determine if Nodef or Mdltag is active
+            
+            Phase = X = Y = Z = Part = Attr = 1
+            NoDef = 0
+            MdlTag = 1
+            
+            if(LS[1,string]:explode(",")[XO,string]:find("nodef")){
+                
+                NoDef = 1
+                
+            }elseif(LS[1,string]:explode(",")[XO,string]:find("mdltag")){
+                
+                MdlTag = 0
+                NoDef = 1
+                
+            }
+            
+        }
+        
+        if(Phase == 1){ #Phase 1: turning input data into usable tags
+            
+            while(X <= LS[1,string]:explode(",")[XO,string]:explode(" "):count() & minquota() > Quota){ #For every tag in the subdivision:
+                
+                if(LS[1,string]:explode(",")[XO,string]:explode(" ")[X,string] == ""){ #Skip bad entries
+                    
+                    X++
+                    Y = 1
+                    TB = TC
+                    continue
+                    
+                }
+                
+                while(Y <= TagAttributes:count()-MdlTag & minquota() > Quota){ #For every type of tag
+                    
+                    while(Z <= TagAttributes[Y,array]:count() & minquota() > Quota){ #For every tag
+                        
+                        if(TagAttributes[Y,array][Z,string]:find(LS[1,string]:explode(",")[XO,string]:explode(" ")[X,string])){ #If tag == input part, then add it to the tag list
+                            
+                            Tags[toString(Y),array] = Tags[toString(Y),array]:add(array(TagAttributes[Y,array][Z,string]))
+                            TC++
+                            
+                        }
+                        
+                        Z++
+                         
+                    }
+                    
+                    if(Z > TagAttributes[Y,array]:count()){ 
+                        
+                        Y++
+                        Z = 1
+                        
+                        
+                    }
+                    
+                }
+                
+                if(Y > TagAttributes:count()-MdlTag){
+                    
+                    if(TC == TB){#If no tags matching the tag were found, output an error
+                        
+                        Print = Print:add(array("Couldn't find a tag matching \"" + LS[1,string]:explode(",")[XO,string]:explode(" ")[X,string] + "\""))
+                        owner():soundPlay(3,100,"buttons/button16.wav",0)
+                        
+                    }
+                    
+                    X++
+                    Y = 1
+                    TB = TC
+                    
+                }
+                
+            }
+            
+            if(Tags:count() == 0 & X > LS[1,string]:explode(",")[XO,string]:explode(" "):count()){ #If no tags were found, cancel the process.
+                
+                Print = Print:add(array("No tags selected!"))
+                soundStop(2)
+                owner():soundPlay(2,100,"buttons/button11.wav",0)
+                soundVolume(2,0.3)
+                Phase = 0
+                LS:remove(1)
+                X = Y = Z = Part = Attr = 1
+                TB = TC = XO = 0
+                CTS = WTS = LTS = 0
+                break
+                
+            }elseif(X > LS[1,string]:explode(",")[XO,string]:explode(" "):count()){ #If some tags WERE found, then appy the default tags and continue
+            
+                Phase = 2
+                X = Y = Z = Part = Attr = 1
+                TB = TC = 0
+                
+                if(!NoDef){ #If Nodef = 0, then add the default tat for every slot that lacks a tag
+                    
+                    for(Y = 1, TagAttributes:count()-MdlTag){
+                        
+                        if(!Tags[toString(Y),array]:count()){
+                            
+                            Tags[toString(Y),array] = TagDefaults[Y,array]
+                            
+                        }
+                        
+                    }
+                    
+                }
+                
+                if(FUNC & !NoDef){ #If functional is on and Nodef is off, add the functional tag
+                
+                    Tags[toString(6),array] = Tags[toString(6),array]:add(array("functional"))
+                    
+                }
+                
+                Print = Print:add(array("Searching for matches, applied " + metacount(Tags) + " tags."))
+                
+                
+            }
+            
+        }
+        
+        if(Phase == 2){ #Begin Phase 2: Finding a car matching the Tag output
+            
+            while(X <= MDL:count() & minquota() > Quota){
+    
+                while(Y <= TagAttributes:count()-MdlTag & minquota() > Quota){
+    
+                    while(Z <= Tags[toString(Y),array]:count() & minquota() > Quota){
+                        
+                        if(MDL[X,table][1,array][2,string]:find(Tags[toString(Y),array][Z,string])){
+                        
+                            break
+                            
+                        }else{
+                        
+                            Z++
+                            
+                        }
+                        
+                    }
+                    
+                    if(Z > Tags[toString(Y),array]:count() & Tags[toString(Y),array]:count()){
+                        
+                        break
+                        
+                    }elseif(MDL[X,table][1,array][2,string]:find(Tags[toString(Y),array][Z,string])){
+                        
+                        Z = 1
+                        Y++
+                        
+                    }
+    
+                }
+    
+                if(Y > TagAttributes:count()-MdlTag){
+                    
+                    if(!PoolTrack:find(" " + X + " ")){
+                                              
+                        Pool = Pool:add(array(Pool[1,number],X))
+                        Pool[1,number] = Pool[1,number] + (MDL[X,table][1,array][1,number]^(DELT))
+                        PoolTrack = PoolTrack + " " + X + " "
+                        
+                    }
+                        
+                    X++
+                    Y = 1
+                    
+                }elseif(Z > Tags[toString(Y),array]:count() & Tags[toString(Y),array]:count()){
+                
+                    X++
+                    Y = 1
+                    Z = 1
+                    
+                }
+                
+            }
+        
+            if(X > MDL:count()){
+                
+            
+                X = Y = Z = Part = Attr = 1
+                XO++
+                Phase = 0
+                
+            }
+            
+        }
+        
+    }
+    
+    if(XO > LS[1,string]:explode(","):count()){
+        
+        LS:remove(1)
+        Pool = Pool:add(array(Pool[1,number]))
+        
+        soundStop(2)
+        owner():soundPlay(2,100,"buttons/button14.wav",0)
+        soundVolume(2,0.3)
+        
+        if(Pool:count() > 2){
+            
+            Print = Print:add(array("Found " + (Pool:count()-2)/2 + " cars matching searched tags."))
+            
+        }else{
+            
+            Print = Print:add(array("No cars exist with those tags!","PS: Your car might be non-default. Check if \".default\" matches your car, if not: specify information to over-write defaults or add \"nodef\" to searches.")) 
+            #You're likely trying to get a car outside of the defaults. Override the defaults by being more specific, or use \'nodef\" to disable defaults."))
+            CTS = WTS = LTS = 0
+            
+        }
+        
+        if(DEBU){
+            
+            CTS = clamp(CTS + round(WTS/60)+round(LTS/50),0,(Pool:count()-2)/2)
+            LTS = 0
+            WTS = 0
+            
+            RandT = Pool[DEBU*2+1,number]
+            DEBU++
+            
+        }else{
+        
+            RandT = random(0,Pool[1,number])
+               
+            while(X <= (Pool:count()-2)/2){
+                
+                if(Pool[(X*2)+2,number] > RandT){
+                    
+                    RandT = Pool[X*2+1,number]
+                    X = 1
+                    break
+                    
+                }else{
+                    
+                    X++
+                    
+                }
+                
+            }
+            
+            X = 1
+            
+        }
+        
+        XO = 0
+        
+    }
+    
+}
+
+################################################################################################################################################################################################################################################################################################################################
+################################################################################################################################################################################################################################################################################################################################
+################################################################################################################################################################################################################################################################################################################################
+
+while((CTS | LTS | WTS) & Pool:count() > 2 & minquota() > Quota & !AddPhase){
+    
+    Car = MDL[RandT,table]
+    
+    if(NewPos){	
+        	
+        BaseAngle = (round((E:angles():yaw())/INCR)*INCR)+ModeRot
+        Origin = E:pos() - vec(0,0,railhead(E:model()))
+        NewPos = 0	
+        	
+    }
+        
+    while(Part <= Car:count()-1 & propCanCreate() & holoCanCreate() & perf()){
+        
+        if(Type == 0){
+            
+            Prt = Car[Part+1,table]
+            
+            if(SvData[1,array][2,string] == ""){
+                
+                SvData = table(array(RandT,road(Car[1,array][5,string]),randint(Car[1,array][6,vector2]:x(),Car[1,array][6,vector2]:y()),randint(1,WeatheringPresets:count()/WX)*WX,randint(0,1)*180,0,Origin,BaseAngle))
+                Origin = Origin + vec(0,Car[1,array][3,number]/2,0):rotateAroundAxis(vec(0,0,1),BaseAngle)
+                
+            }
+        
+            if(Prt[1,number] <= 0){ #PUT EVERYTHING THAT ENT TOUCHES IN SVDATA
+                
+                Ent = propSpawn(Prt[2,string],Origin + Prt[3,vector]:rotateAroundAxis(vec(0,0,1),BaseAngle+SvData[1,array][5,number]),Prt[4,angle]+ang(0,BaseAngle + SvData[1,array][5,number],0),1)
+                SvData = SvData:add(table(table(Ent,Prt[1,number],1,Prt[2,string],Prt[3,vector]:rotateAroundAxis(vec(0,0,1),BaseAngle+SvData[1,array][5,number]),Prt[4,angle]+ang(0,BaseAngle + SvData[1,array][5,number],0),vec(255),0,"",vec(1),array(),array(),array(),255)))
+                
+                PropCount++
+                
+                if(Prt[1,number] == 0){
+                    
+                    noCollideAll(Ent,1)
+                    SvData[1,array][6,number] = SvData[1,array][6,number] + weight(Car[1,array][4,vector],1)*907*TQ*(2/3)
+                    Ent:setMass(weight(Car[1,array][4,vector],1)*907*TQ*(2/3))
+                    soundStop(SID+10)
+                    Ent:soundPlay(SID+10,100,"doors/heavy_metal_stop1.wav")
+                    incrSID()
+                    
+                }else{
+                    
+                    Ent:propPhysicalMaterial("friction_00")
+                    SvData[1,array][6,number] = SvData[1,array][6,number] + weight(Car[1,array][4,vector],1)*907*TQ*(1/6)
+                    Ent:setMass(weight(Car[1,array][4,vector],1)*907*TQ*(1/6))
+                    soundStop(SID+10)
+                    Ent:soundPlay(SID+10,100,select(randint(1,4),"ambient/machines/pneumatic_drill_1.wav","ambient/machines/pneumatic_drill_2.wav","ambient/machines/pneumatic_drill_3.wav","ambient/machines/pneumatic_drill_4.wav"))
+                    incrSID()
+                    
+                }
+                
+                Type = 1
+                
+            }else{
+            
+                if(Prt[1,number] != 0){
+            
+                    P = SvData[Prt[1,number]+1,table][1,entity]
+                    
+                    Ent = holoCreate(HOLID,P:toWorld(Prt[3,vector]),
+                    vec(1),P:toWorld(Prt[4,angle]),
+                    vec(255),Prt[2,string])
+                    holoParent(HOLID,P)
+                    
+                    HOLID++
+                    HoloCount++
+                    
+                    SvData = SvData:add(table(table(Ent,Prt[1,number],2,Prt[2,string],Prt[3,vector],Prt[4,angle],vec(255),0,"",vec(1),array(),array(),array(),255)))
+                    Type = 2
+                    
+                }else{
+                    
+                    Print = Print:add(array("Can't create a hologram with no parent!"))
+                    Attr = 1
+                    Part++
+                    Type = 0
+                    continue
+                    
+                }
+                
+            }
+            
+        }
+        
+        if(Type){
+        
+            while(Attr <= (Prt:count()-4)/2 & perf()){
+                
+                if(Prt[(Attr*2)+3,string] == "color"){################################################################################################################################
+                    
+                    W = randint(1,Prt[(Attr*2)+4,array]:count())
+                    
+                    C = randtoRGB(
+                    Colors[Prt[(Attr*2)+4,array][W,number]*2-1,vector],
+                    Colors[Prt[(Attr*2)+4,array][W,number]*2,vector])
+                
+                    Ent:setColor(C)
+                    
+                    SvData[Part+1,table][7,vector] = C
+                    SvData[Part+1,table][8,number] = Prt[(Attr*2)+4,array][W,number]
+                    
+                    Attr++
+                    continue
+                    
+                }elseif(Prt[(Attr*2)+3,string] == "weather"){################################################################################################################################
+        
+                    for(X = 1,Prt[(Attr*2)+4,array]:count()/2){
+                         
+                        Ent:setSubMaterial(Prt[(Attr*2)+4,array][X*2,number],WeatheringPresets[SvData[1,array][4,number]-(WX-Prt[(Attr*2)+4,array][X*2-1,number]),string])
+                        SvData[Part+1,table][11,array] = SvData[Part+1,table][11,array]:add(array(Prt[(Attr*2)+4,array][X*2,number],WeatheringPresets[SvData[1,array][4,number]-(WX-Prt[(Attr*2)+4,array][X*2-1,number]),string]))
+                        X++
+                        
+                    }
+                    
+                    Attr++
+                    continue
+                    
+                }elseif(Prt[(Attr*2)+3,string] == "submat"){################################################################################################################################
+                
+                    O = array()
+                
+                    for(X = 1,Prt[(Attr*2)+4,array]:count()/2){
+                        
+                        Ent:setSubMaterial(Prt[(Attr*2)+4,array][X*2-1,number],Prt[(Attr*2)+4,array][X*2,string])
+                        SvData[Part+1,table][11,array] = SvData[Part+1,table][11,array]:add(array(Prt[(Attr*2)+4,array][X*2-1,number],Prt[(Attr*2)+4,array][X*2,string]))
+                        
+                    }
+                    
+                    
+                    O = array()
+                    
+                    Attr++                
+                    continue
+                    
+                }elseif(Prt[(Attr*2)+3,string] == "colorand"){################################################################################################################################
+                    
+                    C = Prt[(Attr*2)+4,array][1,vector] - (Prt[(Attr*2)+4,array][1,vector]-Prt[(Attr*2)+4,array][2,vector])*random(0,1)
+                    SvData[Part+1,table][7,vector] = C
+                    Ent:setColor(C)
+                    
+                    Attr++                
+                    continue
+                    
+                }elseif(Prt[(Attr*2)+3,string] == "colorcopy"){################################################################################################################################
+                    
+                    C = SvData[Prt[(Attr*2)+4,number]+1,table][7,vector]
+                    SvData[Part+1,table][7,vector] = C
+                    Ent:setColor(C)
+                    
+                    Attr++                
+                    continue
+                    
+                }elseif(Prt[(Attr*2)+3,string] == "bodygroup"){################################################################################################################################
+                
+                    for(X = 1, Prt[(Attr*2)+4,array]:count()){
+                    
+                        R = randint(Prt[(Attr*2)+4,array][X,vector]:y(),Prt[(Attr*2)+4,array][X,vector]:z())
+                        Ent:setBodygroup(Prt[(Attr*2)+4,array][X,vector]:x(),R)
+                        SvData[Part+1,table][12,array] = SvData[Part+1,table][12,array]:add(array(Prt[(Attr*2)+4,array][X,vector]:x(),R))
+                        
+                    }
+                
+                    Attr++                
+                    continue
+                    
+                }elseif(Prt[(Attr*2)+3,string] == "axcom"){################################################################################################################################
+                
+                    if(Type == 2 | SvData[Prt[(Attr*2)+4,array][1,number]+1,table][3,number] == 2){
+                        
+                        Print = Print:add(array("Car "+RandT+", Part "+Part+", Attribute "+Prt[(Attr*2)+3,string]+": Cannot create an Axis Center connected to a hologram!"))
+                        
+                    }else{
+                        
+                        axis(Ent,vec(0),SvData[Prt[(Attr*2)+4,array][1,number]+1,table][1,entity],vec(0),0,Prt[(Attr*2)+4,array][2,vector])
+                        
+                    }
+                    
+                    Attr++                
+                    continue
+                    
+                }elseif(Prt[(Attr*2)+3,string] == "textcolor"){################################################################################################################################
+                
+                    C = randtoRGB(
+                    Colors[Prt[(Attr*2)+4,array][2,number]*2-1,vector],
+                    Colors[Prt[(Attr*2)+4,array][2,number]*2,vector])
+                        
+                    Ent:setColor(C)
+                            
+                    SvData[Part+1,table][7,vector] = C
+                    SvData[Part+1,table][8,number] = Prt[(Attr*2)+4,array][2,number]
+                
+                    for(X = 1, Prt[(Attr*2)+4,array]:count()/2-0.5){
+                        
+                        if(SvData[Prt[(Attr*2)+4,array][1,number]+1,table][8,number] == Prt[(Attr*2)+4,array][X*2,number]){
+                            
+                            C = randtoRGB(
+                            Colors[Prt[(Attr*2)+4,array][X*2+1,number]*2-1,vector],
+                            Colors[Prt[(Attr*2)+4,array][X*2+1,number]*2,vector])
+                        
+                            Ent:setColor(C)
+                            
+                            SvData[Part+1,table][7,vector] = C
+                            SvData[Part+1,table][8,number] = Prt[(Attr*2)+4,array][X*2+1,number]
+                            
+                        }
+                        
+                    }
+                    
+                    Attr++                
+                    continue
+                    
+                }elseif(Prt[(Attr*2)+3,string] == "posrand"){################################################################################################################################
+                
+                    P = SvData[Prt[1,number]+1,table][1,entity]
+                    V = randvec(Prt[(Attr*2)+4,array][1,vector],Prt[(Attr*2)+4,array][2,vector])
+                    
+                    if(Type == 2){
+                        
+                        holoPos(holoIndex(Ent),P:toWorld(V))
+                        
+                    }else{
+                        
+                        Ent:setPos(P:toWorld(V))
+                        
+                    }
+
+                    SvData[Part+1,table][5,vector] = V
+                    
+                    Attr++                
+                    continue
+                    
+                }elseif(Prt[(Attr*2)+3,string] == "road"){################################################################################################################################
+                    
+                    if(!Prt[(Attr*2)+4,number]){
+                        
+                        for(X = 1,4){
+                            
+                            Ent:setBodygroup(X,decode("rn",center(SvData[1,array][2,string],4):explode("")[X,string]))
+                            SvData[Part+1,table][12,array] = SvData[Part+1,table][12,array]:add(array(X,decode("rn",center(SvData[1,array][2,string],4):explode("")[X,string])))
+                            
+                        }
+                        
+                    }
+                    
+                    Attr++                
+                    continue
+                    
+                }elseif(Prt[(Attr*2)+3,string] == "poslave"){################################################################################################################################
+                    
+                    P = SvData[Prt[1,number]+1,table][1,entity]
+                    V = (SvData[Prt[(Attr*2)+4,array][1,number]+1,table][5,vector]+ Prt[(Attr*2)+4,array][2,vector]):rotateAroundAxis(vec(0,0,1),Prt[(Attr*2)+4,array][3,number]) 
+                    
+                    if(Type == 2){
+                        
+                        holoPos(holoIndex(Ent),P:toWorld(V))
+                        
+                    }else{
+                        
+                        Ent:setPos(P:toWorld(V))
+                        
+                    }
+                    
+                    SvData[Part+1,table][5,vector] = V
+                    
+                    Attr++                
+                    continue
+                
+                }elseif(Prt[(Attr*2)+3,string] == "number"){################################################################################################################################
+                    
+                    if(!Prt[(Attr*2)+4,number]){
+                        
+                        for(X = 1,6){
+                            
+                            Ent:setBodygroup(X,decode("num",center(SvData[1,array][3,number]:toString(),6):explode("")[X,string]))
+                            SvData[Part+1,table][12,array] = SvData[Part+1,table][12,array]:add(array(X,decode("num",center(SvData[1,array][3,number]:toString(),6):explode("")[X,string])))
+                            
+                        }
+                        
+                    }
+                    
+                    Attr++                
+                    continue
+                    
+                }elseif(Prt[(Attr*2)+3,string] == "scale"){################################################################################################################################
+                    
+                    if(Type == 2){
+                        
+                        holoScale(holoIndex(Ent),Prt[(Attr*2)+4,vector])
+                        SvData[Part+1,table][10,vector] = Prt[(Attr*2)+4,vector] 
+                        
+                    }else{
+                        
+                        Print = Print:add(array("Car "+RandT+", Part "+Part+", Attribute "+Prt[(Attr*2)+3,string]+": Cannot scale a prop!"))
+                        
+                    }
+                    
+                    Attr++                
+                    continue
+                    
+                }elseif(Prt[(Attr*2)+3,string] == "holoclip"){################################################################################################################################
+                    
+                    if(Type == 2){
+                        
+                        for(X = 1,5){
+                            
+                            holoClipEnabled(holoIndex(Ent),X,0)
+                            
+                        }
+                        
+                        for(X = 1,Prt[(Attr*2)+4,array]:count()/2){
+                            
+                            holoClipEnabled(holoIndex(Ent),X,1)
+                            holoClip(holoIndex(Ent),X,Prt[(Attr*2)+4,array][X*2-1,vector],Prt[(Attr*2)+4,array][X*2,vector],0)
+                            
+                        }
+                              
+                        SvData[Part+1,table][13,array] = Prt[(Attr*2)+4,array] 
+                        
+                    }else{
+                        
+                        Print = Print:add(array("Car "+RandT+", Part "+Part+", Attribute "+Prt[(Attr*2)+3,string]+": Cannot clip a prop!"))
+                        
+                    }
+                    
+                    Attr++                
+                    continue
+                    
+                }elseif(Prt[(Attr*2)+3,string] == "setcolor"){################################################################################################################################
+                    
+                    C = Prt[(Attr*2)+4,vector]
+                    SvData[Part+1,table][7,vector] = C
+                    Ent:setColor(C)
+                    
+                    Attr++                
+                    continue
+
+                }elseif(Prt[(Attr*2)+3,string] == "material"){################################################################################################################################
+                    
+                    SvData[Part+1,table][9,string] = Prt[(Attr*2)+4,string] 
+                    Ent:setMaterial(Prt[(Attr*2)+4,string])
+                    
+                    Attr++                
+                    continue
+                    
+                }elseif(Prt[(Attr*2)+3,string] == "alpha"){################################################################################################################################
+                    
+                    SvData[Part+1,table][14,number] = Prt[(Attr*2)+4,number] 
+                    Ent:setAlpha(Prt[(Attr*2)+4,number])
+                    
+                    Attr++                
+                    continue
+                    
+                }elseif(Prt[(Attr*2)+3,string] == "skin"){################################################################################################################################
+                    
+                    W = randint(Prt[(Attr*2)+4,vector2]:x(),Prt[(Attr*2)+4,vector2]:y())
+                    SvData[Part+1,table][15,number] = W
+                    Ent:setSkin(W)
+                    
+                    Attr++                
+                    continue
+                    
+                }else{################################################################################################################################
+                
+                    Print = Print:add(array("Car "+RandT+", Part "+Part+", Attribute "+Prt[(Attr*2)+3,string]+" not recognised"))
+                    Attr++ 
+                    
+                }
+                
+            }
+            
+            
+            if(Attr > (Prt:count()-4)/2){
+                
+                Attr = 1
+                Part++
+                Type = 0
+                
+                
+            }
+            
+        }
+        
+    }
+    
+    if(Part > Car:count()-1){
+        
+        Part = 1
+        CTS = clamp(CTS-1,0,CTS)
+        LTS = clamp(LTS - Car[1,array][3,number]/12,0,LTS)
+        WTS = clamp(WTS - (SvData[1,array][6,number]/907),0,WTS)
+        
+        TotalTrainLength += Car[1,array][3,number]
+        TotalTrainWeight += SvData[1,array][6,number]
+        
+        Origin = Origin + vec(0,Car[1,array][3,number]/2,0):rotateAroundAxis(vec(0,0,1),BaseAngle)
+        Spawned = Spawned:add(table(SvData:clone()))
+        SvData = table()
+        CarCount++
+        
+        if(DEBU){
+            
+            CTS = clamp(CTS + round(WTS/60)+round(LTS/50),0,(Pool:count()-2)/2)
+            LTS = 0
+            WTS = 0
+            
+            RandT = Pool[DEBU*2+1,number]
+            DEBU++
+            
+        }else{
+        
+            RandT = random(0,Pool[1,number])
+               
+            while(X <= (Pool:count()-2)/2){
+                
+                if(Pool[(X*2)+2,number] > RandT){
+                    
+                    RandT = Pool[X*2+1,number]
+                    X = 1
+                    break
+                    
+                }else{
+                    
+                    X++
+                    
+                }
+                
+            }
+            
+            X = 1
+            
+        }
+        
+    }
+        #[
+    }else{
+    
+        
+        
+        axis(Spawned[toString(Failsafe+1),entity],Spawned[toString(Failsafe+1),entity]:massCenterL(),Spawned[toString(Failsafe),entity],
+        Spawned[toString(Failsafe),entity]:toLocal(Spawned[toString(Failsafe+1),entity]:massCenter()+vec(0,0,10)))
+        axis(Spawned[toString(Failsafe+2),entity],Spawned[toString(Failsafe+2),entity]:massCenterL(),Spawned[toString(Failsafe),entity],
+        Spawned[toString(Failsafe),entity]:toLocal(Spawned[toString(Failsafe+2),entity]:massCenter()+vec(0,0,10)))
+        
+        if(Spawned[toString(Failsafe+2),entity]:massCenter():distance(Spawned[toString(Failsafe-2),entity]:massCenter()) < 400){
+    
+            RopeID++
+            Offset = (Spawned[toString(Failsafe-2),entity]:toWorld(Spawned[toString(Failsafe-2),entity]:massCenterL())-Spawned[toString(Failsafe+2),entity]:toWorld(Spawned[toString(Failsafe+2),entity]:massCenterL()))/
+            (Spawned[toString(Failsafe-2),entity]:toWorld(Spawned[toString(Failsafe-2),entity]:massCenterL())-Spawned[toString(Failsafe+2),entity]:toWorld(Spawned[toString(Failsafe+2),entity]:massCenterL())):length()
+            rope(RopeID,Spawned[toString(Failsafe+2),entity],Spawned[toString(Failsafe+2),entity]:toLocal((Offset*50)+Spawned[toString(Failsafe+2),entity]:massCenter()),
+            Spawned[toString(Failsafe-2),entity],Spawned[toString(Failsafe-2),entity]:toLocal((-Offset*50)+Spawned[toString(Failsafe-2),entity]:massCenter()),0,0,"xx",1)
+            
+        }
+        
+        Loaded = random(0,1)
+        
+        if(Loaded < MDL[RandT+8,vector2]:y()){
+            
+            Loaded = 1
+            
+        }else{
+        
+            Loaded = 0
+            
+        }
+        
+        Spawned[toString(Failsafe),entity]:setMass(progress(Loaded,MDL[RandT+8,vector2]:x())*((3/5)*(TQ*907)))
+        Spawned[toString(Failsafe+1),entity]:setMass(progress(1,MDL[RandT+8,vector2]:x())*((1/5)*(TQ*907)))
+        Spawned[toString(Failsafe+2),entity]:setMass(progress(1,MDL[RandT+8,vector2]:x())*((1/5)*(TQ*907)))
+        
+        TotalTrainWeight = TotalTrainWeight + (Spawned[toString(Failsafe+1),entity]:mass() + Spawned[toString(Failsafe+2),entity]:mass() + Spawned[toString(Failsafe),entity]:mass())/TQ
+        
+        while(X <= MDL[RandT+7,array]:count()){
+            
+            W = randint(MDL[RandT+7,array][X,vector]:y(),MDL[RandT+7,array][X,vector]:z())
+             
+            Spawned[toString(Failsafe),entity]:setBodygroup(MDL[RandT+7,array][X,vector]:x(),W)
+            if(Spawned[toString(Failsafe),entity]:getBodygroups(MDL[RandT+7,array][X,vector]:x()) == 1){
+                
+                Print = Print:add(array("Hidden bodygroup detected! Report this to Metaladon, if you will. " + MDL[RandT+7,array][X,vector]:x() + W))
+                
+            }
+            X++
+            
+        }
+        X = 1
+    
+        
+    
+        W = randint(1,WeatheringPresets:count()/WX)*WX
+        
+        while(X <= MDL[RandT+4,array]:count()/2){
+             
+            Spawned[toString(Failsafe),entity]:setSubMaterial(MDL[RandT+4,array][X*2,number],WeatheringPresets[W-(WX-MDL[RandT+4,array][X*2-1,number]),string])
+            X++
+            
+        }
+        
+        X = 1
+            
+        }
+        
+        if(!MDL[RandT+5,array]:count()){
+            
+            Spawned[toString(Failsafe),entity]:setColor(vec(255))
+            
+        }else{
+        
+            W = randint(1,MDL[RandT+5,array]:count())
+            
+            Spawned[toString(Failsafe),entity]:setColor(randtoRGB(Colors[
+            MDL[RandT+5,array][W,number]*2-1,vector],Colors[
+            MDL[RandT+5,array][W,number]*2,vector]))
+            
+        }
+        
+        Spawned[toString(Failsafe),entity]:setSkin(randint(MDL[RandT+6,vector2]:x(),MDL[RandT+6,vector2]:y()))
+        
+        TotalTrainLength += carLength(Spawned[toString(Failsafe),entity])
+        
+        CTS = clamp(CTS-1,0,CTS)
+        LTS = clamp(LTS - carLength(Spawned[toString(Failsafe),entity])/12,0,LTS)
+        WTS = clamp(WTS - ((Spawned[toString(Failsafe+1),entity]:mass() + Spawned[toString(Failsafe+2),entity]:mass() + Spawned[toString(Failsafe),entity]:mass())/907)/TQ,0,WTS)
+         
+        if(DEBU){
+            
+            RandT = (Pool[DEBU*2+1,number]*S)-(S-1)
+            DEBU++
+            
+        }else{
+        
+            RandT = random(0,Pool[1,number])
+               
+            while(X <= (Pool:count()-2)/2){
+                
+                if(Pool[(X*2)+2,number] > RandT){
+                    
+                    RandT = (Pool[X*2+1,number]*S)-(S-1)
+                    X = 1
+                    break
+                    
+                }else{
+                    
+                    X++
+                    
+                }
+                
+            }
+            
+        }
+        
+    }]#
+
+}
+    
+################################################################################################################################################################################################################################################################################################################################
+################################################################################################################################################################################################################################################################################################################################
+################################################################################################################################################################################################################################################################################################################################
+
+if(minquota() > Quota & (LS[1,string]:explode(" ")[1,string] == ".rem" | LS[1,string]:explode(" ")[1,string] == "!rem") & !AddPhase){
+
+    if(!CTR & !WTR & !LTR){
+        
+        if(LS[1,string]:explode(" ")[2,string]:toNumber() > 0 & LS[1,string]:explode(" ")[2,string]:toNumber() != 0){
+        
+            CTR = LS[1,string]:explode(" ")[2,string]:toNumber()
+            
+        }elseif(LS[1,string]:explode(" ")[2,string]:sub(0,LS[1,string]:explode(" ")[2,string]:length()-2):toNumber() > 0 & LS[1,string]:explode(" ")[2,string]:sub(LS[1,string]:explode(" ")[2,string]:length()-1,LS[1,string]:explode(" ")[2,string]:length()) == "ft"){
+        
+            LTR = LS[1,string]:explode(" ")[2,string]:sub(0,LS[1,string]:explode(" ")[2,string]:length()-2):toNumber()
+            
+        }elseif(LS[1,string]:explode(" ")[2,string]:sub(0,LS[1,string]:explode(" ")[2,string]:length()-1):toNumber() > 0 & LS[1,string]:explode(" ")[2,string]:sub(LS[1,string]:explode(" ")[2,string]:length(),LS[1,string]:explode(" ")[2,string]:length()) == "t"){
+        
+            WTR = LS[1,string]:explode(" ")[2,string]:sub(0,LS[1,string]:explode(" ")[2,string]:length()-1):toNumber()
+        
+        }
+        
+    }
+    
+    if(!CTR & !WTR & !LTR){
+        
+        LS:remove(1)
+        
+    }else{
+            
+        TotalTrainLength -= MDL[Spawned[CarCount-1,table][1,array][1,number],table][1,array][3,number]
+        TotalTrainWeight -= Spawned[CarCount-1,table][1,array][6,number]
+        
+        if(TotalTrainLength > 1){
+            
+            Spacer = 0
+            
+        }
+        
+        CTR = clamp(CTR-1,0,CTR)
+        LTR = clamp(LTR - MDL[Spawned[CarCount-1,table][1,array][1,number],table][1,array][3,number]/12,0,LTR)
+        WTR = clamp(WTR - Spawned[CarCount-1,table][1,array][6,number]/907,0,WTR)
+        
+        Origin = Spawned[CarCount-1,table][1,array][7,vector]
+        BaseAngle = Spawned[CarCount-1,table][1,array][8,number]
+        
+        for(X = 1, Spawned[CarCount-1,table]:count()-1){
+            
+            Spawned[CarCount-1,table][X+1,table][1,entity]:propDelete()
+            
+            if(Spawned[CarCount-1,table][X+1,table][3,number] == 2){
+                
+                HoloCount--
+            
+            }else{
+                
+                PropCount--
+                
+            }
+            
+        }
+        
+        Spawned:remove(CarCount-1)
+        
+        if((!CTR & !LTR & !WTR) | CarCount == 2){
+            
+            LS:remove(1)
+            CarCount = clamp(CarCount-1,1,CarCount) 
+            CTR = WTR = LTR = 0
+            
+        }else{
+            
+            CarCount = clamp(CarCount-1,1,CarCount) 
+            
+        }
+        
+    } 
+    
+}
