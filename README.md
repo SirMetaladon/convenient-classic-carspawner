@@ -11,7 +11,7 @@ Here's how to download & use it:
 
 3. Move the resulting text file to the folder `steam directory/steamapps/common/garrysmod/garrysmod/data/expression2`.<br> ![Screenshot_2](https://github.com/user-attachments/assets/8590c933-721f-46c4-a36c-a35ed190bce1)
   
-4. After loading into Garry's Mod, click "Refresh" on the E2 tool sidebar interface.<br> ![Screenshot_3](https://github.com/user-attachments/assets/c1f59c93-2551-40ac-93cb-1c64c5801ee7)
+4. After loading into Garry's Mod, click "Update" on the E2 tool sidebar interface.<br> ![Screenshot_3](https://github.com/user-attachments/assets/c1f59c93-2551-40ac-93cb-1c64c5801ee7)
 
 5. Find the file by searching "carspawner". Ensure you select the latest version.<br> ![Screenshot_4](https://github.com/user-attachments/assets/8bea9278-32a7-41c6-a6ba-f361bb4386cd)
 
